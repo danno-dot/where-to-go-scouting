@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Database</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    /* Header / Search Section */
+    .search-header {
+      background: #000000;
+      padding: 40px 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .search-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .search-title {
+      color: white;
+      font-family: 'Roboto Slab', serif;
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 280px;
+      max-width: 500px;
+      padding: 16px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      outline: none;
+      transition: box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+
+    .search-btn {
+      padding: 16px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      background: #FFCE00;
+      color: black;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .search-btn:hover {
+      background: #e6b800;
+    }
+
+    .search-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Filters Row */
+    .filters-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .filter-select {
+      padding: 10px 16px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      min-width: 150px;
+    }
+
+    .zip-input {
+      padding: 10px 16px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      background: white;
+      width: 140px;
+    }
+
+    .zip-input::placeholder {
+      color: #999;
+    }
+
+    /* Results Section */
+    .results-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .results-count {
+      font-size: 18px;
+      color: white;
+    }
+
+    .results-count span {
+      font-weight: 700;
+      color: white;
+    }
+
+    .sort-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sort-controls label {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .sort-select {
+      padding: 8px 12px;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+    }
+
+    /* Results Grid */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    /* Result Card */
+    .result-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .result-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .card-image {
+      height: 180px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 48px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+    }
+
+    .card-distance {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .photo-credit {
+      font-size: 11px;
+      color: #888;
+      padding: 4px 12px;
+      background: #f9f9f9;
+      font-style: italic;
+    }
+
+    .card-content {
+      padding: 20px;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 16px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-image {
+      height: 250px;
+      background-size: cover;
+      background-position: center;
+      background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      background: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .modal-close:hover {
+      background: #f0f0f0;
+    }
+
+    .modal-content {
+      padding: 24px;
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1a365d;
+      margin-bottom: 16px;
+    }
+
+    .modal-description {
+      font-size: 15px;
+      color: #444;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .modal-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #eee;
+    }
+
+    .modal-detail {
+      font-size: 14px;
+    }
+
+    .modal-detail-label {
+      color: #888;
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .modal-detail-value {
+      color: #333;
+      font-weight: 500;
+    }
+
+    .modal-contact {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #eee;
+    }
+
+    .modal-contact-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a365d;
+      margin-bottom: 8px;
+    }
+
+    .modal-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #eee;
+    }
+
+    .modal-section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a365d;
+      margin-bottom: 12px;
+    }
+
+    .modal-section-content {
+      font-size: 15px;
+      color: #444;
+      line-height: 1.6;
+    }
+
+    .activity-link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: #1a365d;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .activity-link:hover {
+      background: #2d4a77;
+    }
+
+    .share-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .share-buttons span {
+      font-size: 13px;
+      color: #888;
+      font-weight: 500;
+    }
+
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      text-decoration: none;
+      transition: transform 0.2s, opacity 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .share-btn:hover {
+      transform: scale(1.1);
+      opacity: 0.9;
+    }
+
+    .share-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    .share-btn.facebook {
+      background: #1877F2;
+    }
+
+    .share-btn.twitter {
+      background: #000000;
+    }
+
+    .share-btn.whatsapp {
+      background: #25D366;
+    }
+
+    .share-btn.discord {
+      background: #5865F2;
+    }
+
+    .share-btn.pinterest {
+      background: #E60023;
+    }
+
+    .share-btn.email {
+      background: #EA4335;
+    }
+
+    .share-btn.copy-link {
+      background: #718096;
+    }
+
+    .share-btn.copy-link.copied {
+      background: #48BB78;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a365d;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .card-subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+
+    .card-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #eee;
+    }
+
+    .card-detail {
+      font-size: 13px;
+    }
+
+    .card-detail-label {
+      color: #888;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .card-detail-value {
+      color: #333;
+      font-weight: 500;
+    }
+
+    /* Loading State */
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #e2e8f0;
+      border-top-color: #1a365d;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+
+    /* Error State */
+    .error-state {
+      text-align: center;
+      padding: 40px 20px;
+      background: #fff5f5;
+      border-radius: 12px;
+      color: #c53030;
+    }
+
+    /* Setup Instructions */
+    .setup-instructions {
+      background: #fffbeb;
+      border: 1px solid #f6e05e;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .setup-instructions h3 {
+      color: #975a16;
+      margin-bottom: 12px;
+    }
+
+    .setup-instructions ol {
+      margin-left: 20px;
+      color: #744210;
+    }
+
+    .setup-instructions li {
+      margin-bottom: 8px;
+    }
+
+    .setup-instructions code {
+      background: #fefcbf;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .search-title {
+        font-size: 22px;
+      }
+      
+      .search-input {
+        min-width: 100%;
+      }
+      
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Search Header -->
+  <header class="search-header">
+    <div class="search-container">
+      <h1 class="search-title">Find Your Next Adventure</h1>
+      <div class="search-box">
+        <input 
+          type="text" 
+          class="search-input" 
+          id="searchInput" 
+          placeholder="Search by any field..."
+          onkeypress="if(event.key === 'Enter') performSearch()"
+        >
+        <button class="search-btn" onclick="performSearch()">Search</button>
+      </div>
+      <div class="filters-row" id="filtersRow">
+        <!-- Dynamic filters will be inserted here -->
+      </div>
+    </div>
+  </header>
+
+  <!-- Results Section -->
+  <main class="results-section">
+    <!-- Results Header -->
+    <div class="results-header">
+      <div class="results-count" id="resultsCount">
+        Loading...
+      </div>
+    </div>
+
+    <!-- Results Grid -->
+    <div id="resultsContainer">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading data from Google Sheets...</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ============================================
+    // CONFIGURATION - UPDATE THIS URL!
+    // ============================================
+    // Paste your Google Apps Script Web App URL here:
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyAuWMOtbz5ZyoV4LNKLBMi9-HdKEYo_bsCykVpn639RE2Z6l4oHjpt_Qtf_EXaWtnDSA/exec';
+    // ============================================
+
+    // Global state
+    let allData = [];
+    let filteredData = [];
+    let headers = [];
+    let totalAdventuresCount = 0;
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchData();
+    });
+
+    // Fetch data from Google Apps Script
+    async function fetchData() {
+      const container = document.getElementById('resultsContainer');
+      
+      // Check if URL is configured
+      if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+        container.innerHTML = `
+          <div class="setup-instructions">
+            <h3>⚠️ Setup Required</h3>
+            <ol>
+              <li>Open your Google Sheet</li>
+              <li>Go to <strong>Extensions → Apps Script</strong></li>
+              <li>Paste the Google Apps Script code provided</li>
+              <li>Click <strong>Deploy → New deployment</strong></li>
+              <li>Select type: <strong>Web app</strong></li>
+              <li>Set "Execute as": <strong>Me</strong></li>
+              <li>Set "Who has access": <strong>Anyone</strong></li>
+              <li>Click <strong>Deploy</strong> and copy the Web App URL</li>
+              <li>Open this HTML file and replace <code>YOUR_GOOGLE_APPS_SCRIPT_URL_HERE</code> with your URL</li>
+              <li>Refresh this page</li>
+            </ol>
+          </div>
+        `;
+        document.getElementById('resultsCount').textContent = 'Setup required';
+        return;
+      }
+
+      try {
+        container.innerHTML = `
+          <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading data from Google Sheets...</p>
+          </div>
+        `;
+
+        const response = await fetch(GOOGLE_SCRIPT_URL);
+        const data = await response.json();
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        headers = data.headers;
+        // Filter to only include featured or approved items
+        allData = data.rows.filter(row => {
+          const status = (row['Published Status'] || '').toLowerCase().trim();
+          return status === 'featured' || status === 'approved';
+        });
+        
+        // Store total count for display
+        totalAdventuresCount = allData.length;
+        
+        // Initially filter to show only National High Adventure Base
+        filteredData = allData.filter(row => {
+          const category = (row['Category'] || '').trim();
+          return category === 'National High Adventure Base';
+        });
+
+        setupFilters();
+        renderResults();
+        
+        // Check for adventure parameter in URL and auto-open if found
+        checkUrlForAdventure();
+
+      } catch (error) {
+        container.innerHTML = `
+          <div class="error-state">
+            <h3>Error Loading Data</h3>
+            <p>${error.message}</p>
+            <p style="margin-top: 12px; font-size: 14px;">
+              Make sure your Google Apps Script is deployed correctly and the URL is correct.
+            </p>
+          </div>
+        `;
+        document.getElementById('resultsCount').textContent = 'Error loading data';
+      }
+    }
+
+    // Columns to hide from UI (exact matches and partial matches)
+    const HIDDEN_COLUMNS = ['id', 'ID', 'Image URL', 'image url', 'imageurl', 'google image url', 'photo url', 'picture url', 'Zip Code', 'zip code', 'zipcode'];
+    
+    // Check URL for adventure parameter and auto-open modal
+    function checkUrlForAdventure() {
+      // Check query string (?adventure=Name)
+      const urlParams = new URLSearchParams(window.location.search);
+      let adventureName = urlParams.get('adventure');
+      
+      // Also check hash fragment (#adventure=Name) for iframe compatibility
+      if (!adventureName && window.location.hash) {
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        adventureName = hashParams.get('adventure');
+      }
+      
+      if (adventureName) {
+        adventureName = decodeURIComponent(adventureName);
+        console.log('Looking for adventure:', adventureName);
+        
+        // Find the adventure in allData
+        const adventure = allData.find(row => {
+          const title = row['Activity Name'] || row['Name'] || row['Title'] || row[headers[0]] || '';
+          return title.toLowerCase().trim() === adventureName.toLowerCase().trim();
+        });
+        
+        if (adventure) {
+          console.log('Found adventure, opening modal');
+          // Clear filters and show all data so the adventure is visible
+          filteredData = allData;
+          renderResults();
+          // Open the modal for this adventure
+          setTimeout(() => showDetails(adventure), 300);
+        } else {
+          console.log('Adventure not found, searching for it');
+          // Adventure not found by exact match, try searching
+          document.getElementById('searchInput').value = adventureName;
+          performSearch();
+        }
+      }
+    }
+    
+    // Generate direct link URL for an adventure
+    function getAdventureDirectLink(adventureName) {
+      // Use hash for better iframe compatibility
+      const baseUrl = window.location.origin + window.location.pathname;
+      return baseUrl + '?adventure=' + encodeURIComponent(adventureName);
+    }
+    
+    // Generate Squarespace page link with adventure parameter
+    function getSquarespaceAdventureLink(adventureName) {
+      return 'https://www.wheretogoscouting.com/explore?adventure=' + encodeURIComponent(adventureName);
+    }
+    
+    // Check if a column should be hidden
+    function isHiddenColumn(header) {
+      return HIDDEN_COLUMNS.some(hidden => header.toLowerCase().includes(hidden.toLowerCase()));
+    }
+
+    // Get the image URL column name (if it exists)
+    function getImageColumn() {
+      // First try exact match for "Image URL"
+      const exactMatch = headers.find(h => h === 'Image URL');
+      if (exactMatch) return exactMatch;
+      
+      // Fallback to partial matching
+      return headers.find(h => 
+        h.toLowerCase().includes('image') || 
+        h.toLowerCase().includes('photo') || 
+        h.toLowerCase().includes('picture')
+      );
+    }
+
+    // Convert Google Drive URLs to direct image URLs
+    function convertToDirectImageUrl(url) {
+      if (!url) return null;
+      
+      // Handle various Google Drive URL formats
+      // Format: https://drive.google.com/open?id=XXXXX
+      // Format: https://drive.google.com/file/d/XXXXX/view?usp=sharing
+      // Format: https://drive.google.com/uc?id=XXXXX
+      
+      let fileId = null;
+      
+      // Check for open?id= format
+      const openIdMatch = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
+      if (openIdMatch) {
+        fileId = openIdMatch[1];
+      }
+      
+      // Check for /file/d/ format
+      const fileDMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+      if (fileDMatch) {
+        fileId = fileDMatch[1];
+      }
+      
+      // Check for uc?id= format (already correct, but extract ID anyway)
+      const ucIdMatch = url.match(/drive\.google\.com\/uc\?.*id=([a-zA-Z0-9_-]+)/);
+      if (ucIdMatch) {
+        fileId = ucIdMatch[1];
+      }
+      
+      // If we found a Google Drive file ID, return the direct image URL
+      if (fileId) {
+        return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
+      }
+      
+      // If it's not a Google Drive URL, return as-is (might be a direct image URL)
+      return url;
+    }
+
+    // Get visible headers (excluding hidden columns)
+    function getVisibleHeaders() {
+      return headers.filter(h => !isHiddenColumn(h));
+    }
+
+    // Fallback coordinates for major US zip code prefixes (first 3 digits)
+    // This covers the entire US when the API is unavailable
+    const ZIP_PREFIX_COORDS = {
+      // Northeast
+      "010":{lat:42.1,lng:-72.6},"011":{lat:42.5,lng:-71.0},"012":{lat:42.5,lng:-73.2},"013":{lat:42.6,lng:-72.6},"014":{lat:42.6,lng:-71.8},
+      "015":{lat:42.3,lng:-71.8},"016":{lat:42.3,lng:-71.8},"017":{lat:42.4,lng:-71.1},"018":{lat:42.5,lng:-71.2},"019":{lat:42.5,lng:-70.9},
+      "020":{lat:42.2,lng:-71.0},"021":{lat:42.3,lng:-71.1},"022":{lat:42.3,lng:-71.1},"023":{lat:42.1,lng:-71.0},"024":{lat:42.4,lng:-71.2},
+      "025":{lat:41.7,lng:-70.3},"026":{lat:41.7,lng:-70.9},"027":{lat:41.9,lng:-71.1},"028":{lat:41.8,lng:-71.4},"029":{lat:41.5,lng:-71.5},
+      "030":{lat:43.0,lng:-71.5},"031":{lat:42.9,lng:-71.4},"032":{lat:43.0,lng:-71.5},"033":{lat:43.2,lng:-71.5},"034":{lat:43.6,lng:-71.5},
+      "035":{lat:43.2,lng:-72.3},"036":{lat:43.7,lng:-72.2},"037":{lat:43.6,lng:-72.3},"038":{lat:42.9,lng:-71.2},"039":{lat:43.1,lng:-70.9},
+      "040":{lat:43.7,lng:-70.3},"041":{lat:43.9,lng:-70.0},"042":{lat:43.5,lng:-70.4},"043":{lat:44.1,lng:-69.1},"044":{lat:44.8,lng:-68.8},
+      "045":{lat:44.6,lng:-69.6},"046":{lat:44.9,lng:-68.7},"047":{lat:46.9,lng:-68.0},"048":{lat:44.3,lng:-69.8},"049":{lat:44.2,lng:-69.1},
+      "050":{lat:43.6,lng:-72.3},"051":{lat:43.4,lng:-72.4},"052":{lat:43.1,lng:-72.5},"053":{lat:42.9,lng:-72.6},"054":{lat:44.5,lng:-73.2},
+      "055":{lat:44.4,lng:-72.1},"056":{lat:44.0,lng:-73.2},"057":{lat:43.6,lng:-73.0},"058":{lat:44.4,lng:-72.0},"059":{lat:44.9,lng:-72.2},
+      "060":{lat:41.8,lng:-72.7},"061":{lat:41.8,lng:-72.7},"062":{lat:41.5,lng:-72.1},"063":{lat:41.4,lng:-73.0},"064":{lat:41.7,lng:-72.2},
+      "065":{lat:41.3,lng:-72.9},"066":{lat:41.2,lng:-73.2},"067":{lat:41.6,lng:-73.1},"068":{lat:41.1,lng:-73.4},"069":{lat:41.1,lng:-73.5},
+      // Mid-Atlantic
+      "070":{lat:40.7,lng:-74.2},"071":{lat:40.7,lng:-74.2},"072":{lat:40.5,lng:-74.3},"073":{lat:40.9,lng:-74.2},"074":{lat:41.0,lng:-74.1},
+      "075":{lat:40.9,lng:-74.2},"076":{lat:40.9,lng:-74.0},"077":{lat:40.4,lng:-74.1},"078":{lat:40.7,lng:-74.5},"079":{lat:41.0,lng:-74.7},
+      "080":{lat:39.9,lng:-75.0},"081":{lat:39.7,lng:-75.1},"082":{lat:39.4,lng:-74.5},"083":{lat:39.3,lng:-74.6},"084":{lat:39.9,lng:-75.1},
+      "085":{lat:40.2,lng:-74.7},"086":{lat:40.3,lng:-74.5},"087":{lat:40.1,lng:-74.2},"088":{lat:40.5,lng:-74.6},"089":{lat:40.6,lng:-74.9},
+      "100":{lat:40.8,lng:-74.0},"101":{lat:40.8,lng:-74.0},"102":{lat:40.8,lng:-74.0},"103":{lat:40.6,lng:-74.1},"104":{lat:40.8,lng:-73.9},
+      "105":{lat:41.0,lng:-73.8},"106":{lat:41.0,lng:-73.8},"107":{lat:40.9,lng:-73.9},"108":{lat:40.9,lng:-73.8},"109":{lat:41.2,lng:-73.9},
+      "110":{lat:40.8,lng:-73.6},"111":{lat:40.7,lng:-73.8},"112":{lat:40.7,lng:-74.0},"113":{lat:40.7,lng:-73.8},"114":{lat:40.7,lng:-73.8},
+      "115":{lat:40.8,lng:-73.3},"116":{lat:40.9,lng:-73.1},"117":{lat:40.8,lng:-73.5},"118":{lat:40.9,lng:-72.8},"119":{lat:41.0,lng:-72.3},
+      "120":{lat:42.6,lng:-73.8},"121":{lat:42.6,lng:-73.8},"122":{lat:42.8,lng:-73.9},"123":{lat:42.8,lng:-74.0},"124":{lat:41.7,lng:-74.0},
+      "125":{lat:41.5,lng:-74.4},"126":{lat:42.1,lng:-75.9},"127":{lat:42.4,lng:-75.0},"128":{lat:43.0,lng:-76.2},"129":{lat:43.0,lng:-77.0},
+      "130":{lat:43.1,lng:-76.2},"131":{lat:43.0,lng:-76.1},"132":{lat:43.2,lng:-75.5},"133":{lat:43.1,lng:-75.2},"134":{lat:43.1,lng:-77.6},
+      "135":{lat:43.0,lng:-76.1},"136":{lat:44.0,lng:-75.9},"137":{lat:42.1,lng:-76.8},"138":{lat:42.4,lng:-76.5},"139":{lat:43.2,lng:-77.6},
+      "140":{lat:42.9,lng:-78.9},"141":{lat:42.9,lng:-78.8},"142":{lat:42.9,lng:-78.7},"143":{lat:42.3,lng:-79.3},"144":{lat:42.8,lng:-78.8},
+      "145":{lat:42.2,lng:-77.8},"146":{lat:43.2,lng:-78.7},"147":{lat:42.1,lng:-79.2},"148":{lat:42.1,lng:-76.0},"149":{lat:42.7,lng:-78.0},
+      "150":{lat:40.4,lng:-80.0},"151":{lat:40.4,lng:-79.9},"152":{lat:40.5,lng:-79.9},"153":{lat:40.3,lng:-79.5},"154":{lat:40.6,lng:-80.3},
+      "155":{lat:40.3,lng:-78.9},"156":{lat:40.6,lng:-79.2},"157":{lat:40.3,lng:-79.0},"158":{lat:41.4,lng:-75.6},"159":{lat:40.5,lng:-78.4},
+      "160":{lat:41.2,lng:-77.0},"161":{lat:41.9,lng:-80.1},"162":{lat:41.2,lng:-79.4},"163":{lat:42.0,lng:-80.1},"164":{lat:41.6,lng:-79.7},
+      "165":{lat:41.4,lng:-79.4},"166":{lat:40.5,lng:-78.4},"167":{lat:40.3,lng:-76.9},"168":{lat:40.0,lng:-76.3},"169":{lat:40.9,lng:-76.0},
+      "170":{lat:40.3,lng:-76.9},"171":{lat:40.2,lng:-76.7},"172":{lat:40.0,lng:-76.3},"173":{lat:40.0,lng:-76.3},"174":{lat:40.5,lng:-77.1},
+      "175":{lat:39.8,lng:-76.9},"176":{lat:40.1,lng:-76.3},"177":{lat:40.0,lng:-77.3},"178":{lat:40.6,lng:-75.4},"179":{lat:40.3,lng:-75.9},
+      "180":{lat:40.6,lng:-75.5},"181":{lat:40.9,lng:-75.2},"182":{lat:41.2,lng:-75.9},"183":{lat:40.3,lng:-76.0},"184":{lat:41.4,lng:-75.7},
+      "185":{lat:41.2,lng:-75.9},"186":{lat:41.5,lng:-75.5},"187":{lat:41.2,lng:-76.8},"188":{lat:41.0,lng:-76.5},"189":{lat:40.2,lng:-75.5},
+      "190":{lat:40.0,lng:-75.1},"191":{lat:40.0,lng:-75.2},"192":{lat:40.0,lng:-75.1},"193":{lat:40.2,lng:-75.0},"194":{lat:40.1,lng:-75.3},
+      "195":{lat:40.4,lng:-75.9},"196":{lat:39.9,lng:-75.5},"197":{lat:39.7,lng:-75.5},"198":{lat:39.2,lng:-75.5},"199":{lat:39.2,lng:-75.6},
+      // Southeast
+      "200":{lat:38.9,lng:-77.0},"201":{lat:38.9,lng:-77.0},"202":{lat:38.9,lng:-77.0},"203":{lat:38.9,lng:-77.0},"204":{lat:38.9,lng:-77.0},
+      "205":{lat:38.9,lng:-77.0},"206":{lat:38.9,lng:-77.2},"207":{lat:39.0,lng:-77.1},"208":{lat:39.1,lng:-77.2},"209":{lat:39.4,lng:-77.4},
+      "210":{lat:39.3,lng:-76.6},"211":{lat:39.3,lng:-76.6},"212":{lat:39.3,lng:-76.6},"214":{lat:39.0,lng:-76.5},"215":{lat:39.5,lng:-76.2},
+      "216":{lat:39.3,lng:-76.0},"217":{lat:39.4,lng:-77.4},"218":{lat:38.3,lng:-76.5},"219":{lat:39.6,lng:-78.8},"220":{lat:38.8,lng:-77.1},
+      "221":{lat:38.8,lng:-77.1},"222":{lat:38.8,lng:-77.3},"223":{lat:38.7,lng:-77.2},"224":{lat:37.5,lng:-77.4},"225":{lat:38.3,lng:-77.5},
+      "226":{lat:38.3,lng:-78.5},"227":{lat:38.0,lng:-79.0},"228":{lat:37.5,lng:-77.4},"229":{lat:37.3,lng:-79.9},"230":{lat:37.5,lng:-77.4},
+      "231":{lat:37.5,lng:-77.4},"232":{lat:37.5,lng:-77.4},"233":{lat:36.9,lng:-76.3},"234":{lat:36.8,lng:-76.0},"235":{lat:37.1,lng:-76.5},
+      "236":{lat:36.9,lng:-76.3},"237":{lat:37.1,lng:-76.5},"238":{lat:37.5,lng:-77.4},"239":{lat:37.5,lng:-76.3},"240":{lat:37.3,lng:-79.9},
+      "241":{lat:37.3,lng:-79.9},"242":{lat:36.6,lng:-82.2},"243":{lat:37.1,lng:-80.7},"244":{lat:37.0,lng:-80.4},"245":{lat:37.4,lng:-79.1},
+      "246":{lat:36.7,lng:-80.0},"247":{lat:37.3,lng:-81.2},"248":{lat:38.4,lng:-82.4},"249":{lat:37.8,lng:-80.4},"250":{lat:38.4,lng:-81.6},
+      "251":{lat:38.4,lng:-81.6},"252":{lat:38.4,lng:-81.6},"253":{lat:38.4,lng:-81.6},"254":{lat:39.3,lng:-81.5},"255":{lat:38.4,lng:-82.0},
+      "256":{lat:37.8,lng:-81.2},"257":{lat:39.0,lng:-80.0},"258":{lat:37.5,lng:-81.9},"259":{lat:39.4,lng:-80.8},"260":{lat:39.6,lng:-79.9},
+      "261":{lat:39.3,lng:-80.3},"262":{lat:37.8,lng:-80.4},"263":{lat:38.9,lng:-79.9},"264":{lat:38.4,lng:-79.4},"265":{lat:39.0,lng:-79.5},
+      "266":{lat:38.3,lng:-81.7},"267":{lat:39.5,lng:-77.9},"268":{lat:39.1,lng:-78.2},"270":{lat:35.8,lng:-78.6},"271":{lat:36.1,lng:-79.8},
+      "272":{lat:36.1,lng:-79.8},"273":{lat:36.1,lng:-79.8},"274":{lat:36.1,lng:-79.8},"275":{lat:35.8,lng:-78.6},"276":{lat:36.1,lng:-80.2},
+      "277":{lat:35.9,lng:-78.9},"278":{lat:35.9,lng:-77.8},"279":{lat:35.8,lng:-80.9},"280":{lat:35.2,lng:-80.8},"281":{lat:35.0,lng:-80.9},
+      "282":{lat:35.2,lng:-80.8},"283":{lat:35.2,lng:-80.8},"284":{lat:34.9,lng:-79.0},"285":{lat:35.1,lng:-77.0},"286":{lat:35.0,lng:-78.9},
+      "287":{lat:35.6,lng:-77.4},"288":{lat:35.2,lng:-80.8},"289":{lat:35.6,lng:-82.5},"290":{lat:34.0,lng:-81.0},"291":{lat:34.0,lng:-81.0},
+      "292":{lat:34.0,lng:-81.0},"293":{lat:34.8,lng:-82.4},"294":{lat:33.4,lng:-79.9},"295":{lat:34.2,lng:-79.8},"296":{lat:34.9,lng:-81.9},
+      "297":{lat:35.0,lng:-80.9},"298":{lat:32.8,lng:-79.9},"299":{lat:32.4,lng:-80.7},"300":{lat:33.7,lng:-84.4},"301":{lat:33.7,lng:-84.4},
+      "302":{lat:33.7,lng:-84.4},"303":{lat:33.7,lng:-84.4},"304":{lat:33.4,lng:-84.2},"305":{lat:33.9,lng:-84.4},"306":{lat:33.8,lng:-84.4},
+      "307":{lat:34.3,lng:-84.0},"308":{lat:32.1,lng:-81.2},"309":{lat:32.1,lng:-81.2},"310":{lat:32.1,lng:-81.2},"311":{lat:33.7,lng:-84.4},
+      "312":{lat:32.5,lng:-84.9},"313":{lat:32.5,lng:-84.9},"314":{lat:32.5,lng:-83.6},"315":{lat:31.6,lng:-84.2},"316":{lat:31.2,lng:-81.5},
+      "317":{lat:30.8,lng:-83.3},"318":{lat:33.5,lng:-82.0},"319":{lat:33.5,lng:-82.0},"320":{lat:30.4,lng:-81.6},"321":{lat:28.5,lng:-81.4},
+      "322":{lat:30.3,lng:-81.7},"323":{lat:29.2,lng:-81.0},"324":{lat:30.2,lng:-82.6},"325":{lat:30.4,lng:-84.3},"326":{lat:29.2,lng:-82.1},
+      "327":{lat:28.5,lng:-81.4},"328":{lat:28.5,lng:-81.4},"329":{lat:28.5,lng:-81.4},"330":{lat:25.8,lng:-80.2},"331":{lat:25.8,lng:-80.2},
+      "332":{lat:25.8,lng:-80.2},"333":{lat:26.1,lng:-80.1},"334":{lat:26.7,lng:-80.1},"335":{lat:27.9,lng:-82.5},"336":{lat:27.9,lng:-82.5},
+      "337":{lat:27.9,lng:-82.5},"338":{lat:27.5,lng:-82.6},"339":{lat:26.6,lng:-81.9},"340":{lat:26.6,lng:-81.9},"341":{lat:27.0,lng:-82.0},
+      "342":{lat:28.0,lng:-82.5},"344":{lat:28.0,lng:-82.8},"346":{lat:27.5,lng:-82.5},"347":{lat:28.0,lng:-81.9},"349":{lat:28.1,lng:-80.6},
+      // Midwest
+      "430":{lat:39.96,lng:-82.99},"431":{lat:39.96,lng:-82.99},"432":{lat:39.96,lng:-82.99},"433":{lat:40.10,lng:-82.92},"434":{lat:40.35,lng:-82.49},
+      "435":{lat:40.0,lng:-83.0},"436":{lat:41.66,lng:-83.58},"437":{lat:41.05,lng:-83.65},"438":{lat:41.16,lng:-81.36},"439":{lat:41.00,lng:-81.60},
+      "440":{lat:41.50,lng:-81.69},"441":{lat:41.50,lng:-81.69},"442":{lat:41.15,lng:-81.48},"443":{lat:41.09,lng:-80.65},"444":{lat:41.10,lng:-80.65},
+      "445":{lat:40.80,lng:-81.38},"446":{lat:40.37,lng:-80.62},"447":{lat:40.00,lng:-81.00},"448":{lat:40.05,lng:-82.40},"449":{lat:40.35,lng:-82.49},
+      "450":{lat:39.10,lng:-84.51},"451":{lat:39.10,lng:-84.51},"452":{lat:39.10,lng:-84.51},"453":{lat:39.76,lng:-84.19},"454":{lat:39.76,lng:-84.19},
+      "455":{lat:39.93,lng:-83.81},"456":{lat:39.33,lng:-82.98},"457":{lat:39.50,lng:-84.40},"458":{lat:39.35,lng:-82.10},"460":{lat:39.77,lng:-86.16},
+      "461":{lat:39.77,lng:-86.16},"462":{lat:39.77,lng:-86.16},"463":{lat:39.77,lng:-86.16},"464":{lat:40.18,lng:-85.38},"465":{lat:40.49,lng:-86.11},
+      "466":{lat:40.42,lng:-86.88},"467":{lat:41.08,lng:-85.14},"468":{lat:41.65,lng:-86.25},"469":{lat:41.65,lng:-86.25},"470":{lat:39.17,lng:-86.53},
+      "471":{lat:39.77,lng:-86.16},"472":{lat:39.46,lng:-87.41},"473":{lat:38.68,lng:-87.53},"474":{lat:38.05,lng:-87.58},"475":{lat:38.32,lng:-85.76},
+      "476":{lat:38.05,lng:-87.58},"477":{lat:38.68,lng:-87.53},"478":{lat:39.46,lng:-87.41},"479":{lat:38.32,lng:-85.76},"480":{lat:42.33,lng:-83.04},
+      "481":{lat:42.33,lng:-83.04},"482":{lat:42.33,lng:-83.04},"483":{lat:42.33,lng:-83.04},"484":{lat:43.01,lng:-83.69},"485":{lat:43.42,lng:-83.95},
+      "486":{lat:43.66,lng:-84.25},"487":{lat:42.72,lng:-84.55},"488":{lat:42.72,lng:-84.55},"489":{lat:42.72,lng:-84.55},"490":{lat:42.29,lng:-85.58},
+      "491":{lat:42.29,lng:-85.58},"492":{lat:42.29,lng:-85.58},"493":{lat:42.96,lng:-85.67},"494":{lat:42.96,lng:-85.67},"495":{lat:42.96,lng:-85.67},
+      "496":{lat:43.23,lng:-86.24},"497":{lat:43.66,lng:-85.49},"498":{lat:44.76,lng:-85.64},"499":{lat:46.49,lng:-84.35},"500":{lat:41.59,lng:-93.62},
+      "501":{lat:41.59,lng:-93.62},"502":{lat:41.59,lng:-93.62},"503":{lat:41.59,lng:-93.62},"504":{lat:42.53,lng:-92.45},"505":{lat:41.66,lng:-91.53},
+      "506":{lat:42.03,lng:-93.62},"507":{lat:42.50,lng:-94.17},"508":{lat:41.26,lng:-95.86},"509":{lat:42.50,lng:-96.40},"510":{lat:42.50,lng:-96.40},
+      "511":{lat:42.50,lng:-96.40},"512":{lat:41.26,lng:-95.94},"513":{lat:41.26,lng:-95.94},"514":{lat:40.81,lng:-91.12},"515":{lat:40.81,lng:-91.12},
+      "516":{lat:41.00,lng:-92.41},"520":{lat:41.52,lng:-90.58},"521":{lat:41.52,lng:-90.58},"522":{lat:41.67,lng:-91.53},"523":{lat:42.03,lng:-91.67},
+      "524":{lat:42.50,lng:-90.67},"525":{lat:42.03,lng:-91.67},"526":{lat:41.59,lng:-90.59},"527":{lat:41.01,lng:-92.41},"528":{lat:40.41,lng:-91.38},
+      "530":{lat:43.07,lng:-89.39},"531":{lat:43.07,lng:-89.39},"532":{lat:43.04,lng:-87.91},"534":{lat:42.73,lng:-87.78},"535":{lat:43.04,lng:-87.91},
+      "537":{lat:43.04,lng:-87.91},"538":{lat:43.07,lng:-89.39},"539":{lat:43.07,lng:-89.39},"540":{lat:44.02,lng:-88.54},"541":{lat:44.02,lng:-88.54},
+      "542":{lat:44.02,lng:-88.54},"543":{lat:44.02,lng:-88.54},"544":{lat:44.94,lng:-89.63},"545":{lat:44.52,lng:-88.02},"546":{lat:43.79,lng:-91.25},
+      "547":{lat:44.81,lng:-91.50},"548":{lat:45.78,lng:-88.04},"549":{lat:44.52,lng:-87.99},"550":{lat:44.98,lng:-93.27},"551":{lat:44.98,lng:-93.27},
+      "553":{lat:44.98,lng:-93.27},"554":{lat:44.98,lng:-93.27},"555":{lat:44.98,lng:-93.27},"556":{lat:46.78,lng:-92.11},"557":{lat:46.78,lng:-92.11},
+      "558":{lat:46.78,lng:-92.11},"559":{lat:44.16,lng:-93.99},"560":{lat:45.57,lng:-94.16},"561":{lat:44.16,lng:-93.99},"562":{lat:44.04,lng:-92.47},
+      "563":{lat:45.57,lng:-94.16},"564":{lat:45.88,lng:-95.38},"565":{lat:47.47,lng:-92.53},"566":{lat:47.90,lng:-97.03},"567":{lat:48.11,lng:-96.18},
+      // Central/Plains
+      "570":{lat:43.55,lng:-96.73},"571":{lat:43.55,lng:-96.73},"572":{lat:44.37,lng:-100.35},"573":{lat:44.08,lng:-103.23},"574":{lat:43.07,lng:-97.40},
+      "575":{lat:44.37,lng:-98.21},"576":{lat:45.47,lng:-98.49},"577":{lat:45.47,lng:-100.42},"580":{lat:46.88,lng:-96.79},"581":{lat:46.88,lng:-96.79},
+      "582":{lat:47.93,lng:-97.03},"583":{lat:47.93,lng:-97.03},"584":{lat:46.88,lng:-96.79},"585":{lat:48.23,lng:-101.29},"586":{lat:47.50,lng:-99.23},
+      "587":{lat:48.15,lng:-103.63},"588":{lat:46.91,lng:-98.71},"590":{lat:45.46,lng:-98.49},"591":{lat:45.78,lng:-108.50},"592":{lat:48.55,lng:-109.68},
+      "593":{lat:47.51,lng:-111.30},"594":{lat:48.20,lng:-114.31},"595":{lat:47.06,lng:-109.43},"596":{lat:45.78,lng:-108.50},"597":{lat:46.59,lng:-112.04},
+      "598":{lat:46.87,lng:-114.00},"599":{lat:48.42,lng:-115.06},"600":{lat:41.88,lng:-87.63},"601":{lat:41.88,lng:-87.63},"602":{lat:41.88,lng:-87.63},
+      "603":{lat:41.88,lng:-87.63},"604":{lat:41.88,lng:-87.63},"605":{lat:41.88,lng:-87.63},"606":{lat:41.88,lng:-87.63},"607":{lat:41.88,lng:-87.63},
+      "608":{lat:41.88,lng:-87.63},"609":{lat:41.47,lng:-90.52},"610":{lat:41.51,lng:-90.58},"611":{lat:41.51,lng:-90.58},"612":{lat:40.69,lng:-89.59},
+      "613":{lat:40.69,lng:-89.59},"614":{lat:40.69,lng:-89.59},"615":{lat:40.69,lng:-89.59},"616":{lat:40.69,lng:-89.59},"617":{lat:40.12,lng:-88.24},
+      "618":{lat:39.80,lng:-88.96},"619":{lat:40.12,lng:-88.24},"620":{lat:38.63,lng:-90.20},"622":{lat:38.63,lng:-90.20},"623":{lat:38.52,lng:-89.98},
+      "624":{lat:37.72,lng:-89.22},"625":{lat:39.80,lng:-89.65},"626":{lat:39.80,lng:-89.65},"627":{lat:39.80,lng:-89.65},"628":{lat:38.79,lng:-90.00},
+      "629":{lat:37.72,lng:-89.22},"630":{lat:38.63,lng:-90.20},"631":{lat:38.63,lng:-90.20},"633":{lat:38.52,lng:-89.98},"634":{lat:38.79,lng:-90.00},
+      "635":{lat:39.10,lng:-90.32},"636":{lat:36.91,lng:-89.59},"637":{lat:38.52,lng:-89.98},"638":{lat:38.52,lng:-89.98},"639":{lat:38.52,lng:-89.98},
+      "640":{lat:39.10,lng:-94.58},"641":{lat:39.10,lng:-94.58},"644":{lat:39.10,lng:-94.58},"645":{lat:39.10,lng:-94.58},"646":{lat:39.10,lng:-94.58},
+      "647":{lat:39.10,lng:-94.58},"648":{lat:38.58,lng:-92.17},"649":{lat:39.10,lng:-94.58},"650":{lat:38.58,lng:-92.17},"651":{lat:38.58,lng:-92.17},
+      "652":{lat:38.58,lng:-92.17},"653":{lat:38.58,lng:-92.17},"654":{lat:37.22,lng:-93.29},"655":{lat:37.22,lng:-93.29},"656":{lat:37.22,lng:-93.29},
+      "657":{lat:37.22,lng:-93.29},"658":{lat:39.10,lng:-94.58},"660":{lat:39.10,lng:-94.58},"661":{lat:39.10,lng:-94.58},"662":{lat:39.10,lng:-94.58},
+      "664":{lat:39.77,lng:-94.85},"665":{lat:39.04,lng:-95.68},"666":{lat:39.04,lng:-95.68},"667":{lat:39.04,lng:-95.68},"668":{lat:39.04,lng:-95.68},
+      "669":{lat:38.04,lng:-97.93},"670":{lat:37.69,lng:-97.34},"671":{lat:37.69,lng:-97.34},"672":{lat:37.69,lng:-97.34},"673":{lat:38.88,lng:-99.33},
+      "674":{lat:38.75,lng:-97.61},"675":{lat:38.04,lng:-97.93},"676":{lat:39.56,lng:-97.66},"677":{lat:39.35,lng:-101.05},"678":{lat:37.75,lng:-100.02},
+      "679":{lat:37.04,lng:-100.93},"680":{lat:41.26,lng:-96.00},"681":{lat:41.26,lng:-96.00},"683":{lat:40.83,lng:-96.70},"684":{lat:40.83,lng:-96.70},
+      "685":{lat:40.83,lng:-96.70},"686":{lat:40.83,lng:-96.70},"687":{lat:42.87,lng:-100.55},"688":{lat:41.87,lng:-103.66},"689":{lat:40.70,lng:-99.08},
+      "690":{lat:42.12,lng:-100.77},"691":{lat:41.13,lng:-100.77},"692":{lat:41.13,lng:-100.77},"693":{lat:41.87,lng:-103.66},
+      // South Central
+      "700":{lat:29.95,lng:-90.07},"701":{lat:29.95,lng:-90.07},"703":{lat:29.95,lng:-90.07},"704":{lat:29.95,lng:-90.07},"705":{lat:30.23,lng:-92.02},
+      "706":{lat:31.31,lng:-92.45},"707":{lat:30.45,lng:-91.19},"708":{lat:30.45,lng:-91.19},"710":{lat:32.51,lng:-93.75},"711":{lat:32.51,lng:-93.75},
+      "712":{lat:32.51,lng:-93.75},"713":{lat:31.31,lng:-92.45},"714":{lat:31.31,lng:-92.45},"716":{lat:32.51,lng:-93.75},"717":{lat:31.31,lng:-92.45},
+      "718":{lat:32.51,lng:-93.75},"719":{lat:32.51,lng:-93.75},"720":{lat:34.74,lng:-92.29},"721":{lat:34.74,lng:-92.29},"722":{lat:34.74,lng:-92.29},
+      "723":{lat:35.84,lng:-90.70},"724":{lat:35.38,lng:-94.42},"725":{lat:35.38,lng:-94.42},"726":{lat:35.38,lng:-94.42},"727":{lat:36.37,lng:-94.20},
+      "728":{lat:35.84,lng:-90.70},"729":{lat:35.38,lng:-94.42},"730":{lat:35.47,lng:-97.51},"731":{lat:35.47,lng:-97.51},"733":{lat:34.62,lng:-98.43},
+      "734":{lat:34.62,lng:-98.43},"735":{lat:34.62,lng:-98.43},"736":{lat:36.15,lng:-95.99},"737":{lat:35.47,lng:-97.51},"738":{lat:35.47,lng:-97.51},
+      "739":{lat:36.70,lng:-97.09},"740":{lat:36.15,lng:-95.99},"741":{lat:36.15,lng:-95.99},"743":{lat:36.15,lng:-95.99},"744":{lat:35.47,lng:-97.51},
+      "745":{lat:36.15,lng:-95.99},"746":{lat:36.15,lng:-95.99},"747":{lat:36.70,lng:-97.09},"748":{lat:34.62,lng:-98.43},"749":{lat:36.40,lng:-99.40},
+      "750":{lat:32.78,lng:-96.80},"751":{lat:32.78,lng:-96.80},"752":{lat:32.78,lng:-96.80},"753":{lat:32.78,lng:-96.80},"754":{lat:33.20,lng:-97.13},
+      "755":{lat:33.20,lng:-97.13},"756":{lat:32.45,lng:-99.73},"757":{lat:33.91,lng:-98.49},"758":{lat:33.91,lng:-98.49},"759":{lat:33.91,lng:-98.49},
+      "760":{lat:32.75,lng:-97.33},"761":{lat:32.75,lng:-97.33},"762":{lat:32.75,lng:-97.33},"763":{lat:33.20,lng:-97.13},"764":{lat:31.55,lng:-97.15},
+      "765":{lat:31.55,lng:-97.15},"766":{lat:31.55,lng:-97.15},"767":{lat:31.55,lng:-97.15},"768":{lat:32.45,lng:-99.73},"769":{lat:32.45,lng:-99.73},
+      "770":{lat:29.76,lng:-95.37},"771":{lat:29.76,lng:-95.37},"772":{lat:29.76,lng:-95.37},"773":{lat:29.76,lng:-95.37},"774":{lat:29.76,lng:-95.37},
+      "775":{lat:29.76,lng:-95.37},"776":{lat:30.08,lng:-94.13},"777":{lat:30.08,lng:-94.13},"778":{lat:29.30,lng:-94.80},"779":{lat:27.80,lng:-97.40},
+      "780":{lat:29.42,lng:-98.49},"781":{lat:29.42,lng:-98.49},"782":{lat:29.42,lng:-98.49},"783":{lat:27.80,lng:-97.40},"784":{lat:27.80,lng:-97.40},
+      "785":{lat:26.20,lng:-98.23},"786":{lat:30.27,lng:-97.74},"787":{lat:30.27,lng:-97.74},"788":{lat:29.42,lng:-98.49},"789":{lat:30.27,lng:-97.74},
+      "790":{lat:35.22,lng:-101.83},"791":{lat:35.22,lng:-101.83},"792":{lat:33.58,lng:-101.85},"793":{lat:33.58,lng:-101.85},"794":{lat:33.58,lng:-101.85},
+      "795":{lat:33.58,lng:-101.85},"796":{lat:33.58,lng:-101.85},"797":{lat:31.76,lng:-106.49},"798":{lat:31.76,lng:-106.49},"799":{lat:31.76,lng:-106.49},
+      // Mountain/West
+      "800":{lat:39.74,lng:-104.99},"801":{lat:39.74,lng:-104.99},"802":{lat:39.74,lng:-104.99},"803":{lat:39.74,lng:-104.99},"804":{lat:39.74,lng:-104.99},
+      "805":{lat:39.86,lng:-104.67},"806":{lat:40.59,lng:-105.08},"807":{lat:40.59,lng:-105.08},"808":{lat:38.83,lng:-104.82},"809":{lat:38.83,lng:-104.82},
+      "810":{lat:38.83,lng:-104.82},"811":{lat:37.28,lng:-107.88},"812":{lat:38.54,lng:-106.93},"813":{lat:37.45,lng:-105.87},"814":{lat:39.53,lng:-107.78},
+      "815":{lat:39.53,lng:-107.78},"816":{lat:39.53,lng:-107.78},"820":{lat:41.14,lng:-104.82},"821":{lat:41.14,lng:-104.82},"822":{lat:41.31,lng:-105.59},
+      "823":{lat:42.87,lng:-106.31},"824":{lat:43.48,lng:-110.76},"825":{lat:44.28,lng:-105.50},"826":{lat:41.59,lng:-109.22},"827":{lat:44.77,lng:-108.76},
+      "828":{lat:44.28,lng:-105.50},"829":{lat:43.07,lng:-107.95},"830":{lat:43.48,lng:-110.76},"831":{lat:43.07,lng:-107.95},"832":{lat:43.59,lng:-110.82},
+      "833":{lat:43.07,lng:-107.95},"834":{lat:44.77,lng:-108.76},"835":{lat:44.77,lng:-108.76},"836":{lat:44.28,lng:-105.50},"837":{lat:43.61,lng:-116.21},
+      "838":{lat:43.61,lng:-116.21},"840":{lat:40.76,lng:-111.89},"841":{lat:40.76,lng:-111.89},"842":{lat:40.23,lng:-111.66},"843":{lat:41.22,lng:-111.97},
+      "844":{lat:40.76,lng:-111.89},"845":{lat:40.76,lng:-111.89},"846":{lat:40.76,lng:-111.89},"847":{lat:40.76,lng:-111.89},"850":{lat:33.45,lng:-112.07},
+      "851":{lat:33.45,lng:-112.07},"852":{lat:33.45,lng:-112.07},"853":{lat:33.45,lng:-112.07},"855":{lat:33.45,lng:-112.07},"856":{lat:33.45,lng:-112.07},
+      "857":{lat:32.22,lng:-110.93},"859":{lat:35.20,lng:-111.65},"860":{lat:33.45,lng:-112.07},"863":{lat:33.45,lng:-112.07},"864":{lat:33.45,lng:-112.07},
+      "865":{lat:35.20,lng:-111.65},"870":{lat:35.08,lng:-106.65},"871":{lat:35.08,lng:-106.65},"872":{lat:35.08,lng:-106.65},"873":{lat:36.89,lng:-104.44},
+      "874":{lat:35.69,lng:-105.94},"875":{lat:35.08,lng:-106.65},"877":{lat:34.07,lng:-106.90},"878":{lat:34.07,lng:-106.90},"879":{lat:34.07,lng:-106.90},
+      "880":{lat:32.32,lng:-106.76},"881":{lat:33.39,lng:-104.52},"882":{lat:33.39,lng:-104.52},"883":{lat:32.90,lng:-105.96},"884":{lat:32.32,lng:-106.76},
+      "885":{lat:31.76,lng:-106.49},"889":{lat:36.17,lng:-115.14},"890":{lat:36.17,lng:-115.14},"891":{lat:36.17,lng:-115.14},"893":{lat:39.16,lng:-119.77},
+      "894":{lat:39.53,lng:-119.81},"895":{lat:39.53,lng:-119.81},"897":{lat:39.53,lng:-119.81},"898":{lat:40.84,lng:-115.76},
+      // Pacific
+      "900":{lat:34.05,lng:-118.24},"901":{lat:34.05,lng:-118.24},"902":{lat:33.87,lng:-118.13},"903":{lat:33.87,lng:-118.13},"904":{lat:33.77,lng:-118.19},
+      "905":{lat:33.84,lng:-118.26},"906":{lat:34.05,lng:-118.24},"907":{lat:34.05,lng:-118.24},"908":{lat:34.05,lng:-118.24},"910":{lat:34.18,lng:-118.31},
+      "911":{lat:34.15,lng:-118.14},"912":{lat:34.15,lng:-118.14},"913":{lat:34.20,lng:-118.53},"914":{lat:34.23,lng:-118.54},"915":{lat:34.17,lng:-118.45},
+      "916":{lat:34.20,lng:-118.53},"917":{lat:34.13,lng:-117.88},"918":{lat:34.13,lng:-117.88},"919":{lat:34.13,lng:-117.88},"920":{lat:32.72,lng:-117.16},
+      "921":{lat:32.72,lng:-117.16},"922":{lat:33.75,lng:-116.38},"923":{lat:34.05,lng:-117.29},"924":{lat:34.05,lng:-117.29},"925":{lat:33.68,lng:-117.33},
+      "926":{lat:33.68,lng:-117.85},"927":{lat:33.68,lng:-117.85},"928":{lat:33.68,lng:-117.85},"930":{lat:34.42,lng:-119.70},"931":{lat:34.42,lng:-119.70},
+      "932":{lat:35.37,lng:-119.02},"933":{lat:35.37,lng:-119.02},"934":{lat:34.44,lng:-118.61},"935":{lat:35.28,lng:-118.99},"936":{lat:36.74,lng:-119.79},
+      "937":{lat:36.74,lng:-119.79},"938":{lat:36.74,lng:-119.79},"939":{lat:36.97,lng:-122.03},"940":{lat:37.77,lng:-122.42},"941":{lat:37.77,lng:-122.42},
+      "942":{lat:37.77,lng:-122.42},"943":{lat:37.30,lng:-121.85},"944":{lat:37.77,lng:-122.42},"945":{lat:37.80,lng:-122.27},"946":{lat:37.80,lng:-122.27},
+      "947":{lat:37.80,lng:-122.27},"948":{lat:37.86,lng:-122.26},"949":{lat:37.86,lng:-122.26},"950":{lat:37.34,lng:-121.89},"951":{lat:33.98,lng:-117.37},
+      "952":{lat:37.95,lng:-121.29},"953":{lat:37.95,lng:-121.29},"954":{lat:37.86,lng:-122.26},"955":{lat:40.80,lng:-124.16},"956":{lat:38.58,lng:-121.49},
+      "957":{lat:38.58,lng:-121.49},"958":{lat:38.58,lng:-121.49},"959":{lat:39.15,lng:-121.62},"960":{lat:40.58,lng:-122.39},"961":{lat:39.53,lng:-122.19},
+      "962":{lat:40.08,lng:-122.23},"963":{lat:40.80,lng:-124.16},"964":{lat:34.42,lng:-119.70},"965":{lat:36.74,lng:-119.79},"966":{lat:36.97,lng:-121.97},
+      "967":{lat:21.31,lng:-157.86},"968":{lat:21.31,lng:-157.86},"969":{lat:18.47,lng:-66.11},"970":{lat:45.52,lng:-122.68},"971":{lat:45.52,lng:-122.68},
+      "972":{lat:45.52,lng:-122.68},"973":{lat:44.94,lng:-123.03},"974":{lat:44.05,lng:-123.09},"975":{lat:42.33,lng:-122.87},"976":{lat:44.05,lng:-121.31},
+      "977":{lat:44.05,lng:-121.31},"978":{lat:45.67,lng:-118.79},"979":{lat:46.07,lng:-118.33},"980":{lat:47.61,lng:-122.33},"981":{lat:47.61,lng:-122.33},
+      "982":{lat:47.61,lng:-122.33},"983":{lat:47.24,lng:-122.44},"984":{lat:47.24,lng:-122.44},"985":{lat:47.04,lng:-122.90},"986":{lat:45.64,lng:-122.66},
+      "988":{lat:47.66,lng:-117.43},"989":{lat:47.66,lng:-117.43},"990":{lat:47.66,lng:-117.43},"991":{lat:47.66,lng:-117.43},"992":{lat:47.66,lng:-117.43},
+      "993":{lat:46.60,lng:-120.51},"994":{lat:46.60,lng:-120.51},"995":{lat:61.22,lng:-149.90},"996":{lat:61.22,lng:-149.90},"997":{lat:64.84,lng:-147.72},
+      "998":{lat:58.30,lng:-134.42},"999":{lat:55.34,lng:-131.65}
+    };
+    
+    // Get coordinates for a zip code using prefix lookup (covers all US)
+    function getZipCoordinates(zip) {
+      if (!zip) return null;
+      const normalizedZip = String(zip).trim().padStart(5, '0');
+      
+      // Use first 3 digits to find approximate location
+      const prefix = normalizedZip.substring(0, 3);
+      const coords = ZIP_PREFIX_COORDS[prefix];
+      
+      if (coords) {
+        console.log('Looking up zip:', normalizedZip, '(prefix:', prefix, ') -> found:', coords);
+        return coords;
+      }
+      
+      console.log('Looking up zip:', normalizedZip, '(prefix:', prefix, ') -> NOT FOUND');
+      return null;
+    }
+
+    // Calculate distance from coordinates (in miles)
+    function calculateDistanceFromCoords(lat1, lng1, lat2, lng2) {
+      if (!lat1 || !lng1 || !lat2 || !lng2) return null;
+      if (isNaN(lat1) || isNaN(lng1) || isNaN(lat2) || isNaN(lng2)) return null;
+      
+      // Haversine formula
+      const R = 3959; // Earth's radius in miles
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLng = (lng2 - lng1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLng/2) * Math.sin(dLng/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    }
+
+    // Calculate distance between two zip codes (in miles)
+    function calculateDistance(zip1, zip2) {
+      const loc1 = getZipCoordinates(zip1);
+      const loc2 = getZipCoordinates(zip2);
+      
+      if (!loc1 || !loc2) return null;
+      
+      return calculateDistanceFromCoords(loc1.lat, loc1.lng, loc2.lat, loc2.lng);
+    }
+
+    // Setup filter dropdowns based on data
+    function setupFilters() {
+      const filtersRow = document.getElementById('filtersRow');
+      filtersRow.innerHTML = '';
+
+      // Create a Region filter
+      const regionHeader = headers.find(h => h.toLowerCase() === 'region');
+      
+      if (regionHeader) {
+        const uniqueRegions = [...new Set(allData.map(row => row[regionHeader]))].filter(v => v !== '').sort();
+        
+        if (uniqueRegions.length > 0) {
+          const select = document.createElement('select');
+          select.className = 'filter-select';
+          select.id = 'filter-region';
+          select.innerHTML = `<option value="">All Regions</option>`;
+          
+          uniqueRegions.forEach(value => {
+            select.innerHTML += `<option value="${value}">${value}</option>`;
+          });
+          
+          select.onchange = performSearch;
+          filtersRow.appendChild(select);
+        }
+      }
+
+      // Create a Category filter
+      const categoryHeader = headers.find(h => h.toLowerCase() === 'category');
+      
+      if (categoryHeader) {
+        const uniqueCategories = [...new Set(allData.map(row => row[categoryHeader]))].filter(v => v !== '').sort();
+        
+        if (uniqueCategories.length > 0) {
+          const select = document.createElement('select');
+          select.className = 'filter-select';
+          select.id = 'filter-category';
+          select.innerHTML = `<option value="">All Categories</option>`;
+          
+          uniqueCategories.forEach(value => {
+            const selected = value === 'National High Adventure Base' ? ' selected' : '';
+            select.innerHTML += `<option value="${value}"${selected}>${value}</option>`;
+          });
+          
+          select.onchange = performSearch;
+          filtersRow.appendChild(select);
+        }
+      }
+
+      // Create Zip Code input for distance sorting
+      const zipInput = document.createElement('input');
+      zipInput.type = 'text';
+      zipInput.className = 'zip-input';
+      zipInput.id = 'zip-input';
+      zipInput.placeholder = 'Your Zip Code';
+      zipInput.maxLength = 5;
+      zipInput.onkeyup = (e) => {
+        if (e.target.value.length === 5 || e.target.value.length === 0) {
+          performSearch();
+        }
+      };
+      filtersRow.appendChild(zipInput);
+    }
+
+    // Perform search and filter
+    function performSearch() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+      
+      // Get filter values
+      const filters = {};
+      
+      // Check region filter
+      const regionFilter = document.getElementById('filter-region');
+      if (regionFilter && regionFilter.value) {
+        const regionHeader = headers.find(h => h.toLowerCase() === 'region');
+        if (regionHeader) filters[regionHeader] = regionFilter.value;
+      }
+      
+      // Check category filter
+      const categoryFilter = document.getElementById('filter-category');
+      if (categoryFilter && categoryFilter.value) {
+        const categoryHeader = headers.find(h => h.toLowerCase() === 'category');
+        if (categoryHeader) filters[categoryHeader] = categoryFilter.value;
+      }
+      
+      // Check other filters
+      getVisibleHeaders().forEach(header => {
+        if (header.toLowerCase() !== 'region' && header.toLowerCase() !== 'category') {
+          const filterEl = document.getElementById(`filter-${header}`);
+          if (filterEl && filterEl.value) {
+            filters[header] = filterEl.value;
+          }
+        }
+      });
+
+      // Filter data
+      filteredData = allData.filter(row => {
+        // Check search term (only search visible columns)
+        if (searchTerm) {
+          const matchesSearch = getVisibleHeaders().some(header => 
+            String(row[header]).toLowerCase().includes(searchTerm)
+          );
+          if (!matchesSearch) return false;
+        }
+
+        // Check filters
+        for (const [header, value] of Object.entries(filters)) {
+          if (row[header] != value) return false;
+        }
+
+        return true;
+      });
+
+      // Sort by distance if zip code is entered
+      const userZip = document.getElementById('zip-input')?.value?.trim();
+      if (userZip && userZip.length === 5) {
+        // Find the zip code column
+        const zipColumn = headers.find(h => h.toLowerCase().replace(/\s+/g, '').includes('zip'));
+        if (zipColumn) {
+          filteredData.sort((a, b) => {
+            const distA = calculateDistance(userZip, String(a[zipColumn] || '').trim());
+            const distB = calculateDistance(userZip, String(b[zipColumn] || '').trim());
+            // Push null distances to the end
+            if (distA === null && distB === null) return 0;
+            if (distA === null) return 1;
+            if (distB === null) return -1;
+            return distA - distB;
+          });
+        }
+      }
+
+      renderResults();
+    }
+
+    // Render results as cards
+    function renderResults() {
+      const container = document.getElementById('resultsContainer');
+      const countEl = document.getElementById('resultsCount');
+
+      if (filteredData.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <h3>No results found</h3>
+            <p>Try adjusting your search or filters</p>
+          </div>
+        `;
+        countEl.innerHTML = `<span>0</span> results | <span>${totalAdventuresCount}</span> total adventures`;
+        return;
+      }
+
+      countEl.innerHTML = `<span>${filteredData.length}</span> result${filteredData.length !== 1 ? 's' : ''} | <span>${totalAdventuresCount}</span> total adventures`;
+
+      // Get user's location if zip code entered
+      const userZip = document.getElementById('zip-input')?.value?.trim();
+      console.log('User zip from input:', userZip);
+      let userLoc = null;
+      if (userZip && userZip.length === 5) {
+        userLoc = getZipCoordinates(userZip);
+        console.log('User location result:', userLoc);
+      }
+      
+      // Log first adventure's lat/lng for debugging
+      if (filteredData.length > 0) {
+        const firstRow = filteredData[0];
+        console.log('First adventure:', firstRow['Activity Name'] || firstRow[Object.keys(firstRow)[0]]);
+        console.log('Headers:', headers);
+        const latCol = headers.find(h => h.toLowerCase() === 'latitude' || h.toLowerCase() === 'lat');
+        const lngCol = headers.find(h => h.toLowerCase() === 'longitude' || h.toLowerCase() === 'lng' || h.toLowerCase() === 'long');
+        console.log('Lat column found:', latCol, '-> value:', firstRow[latCol]);
+        console.log('Lng column found:', lngCol, '-> value:', firstRow[lngCol]);
+      }
+
+      // Create cards
+      const grid = document.createElement('div');
+      grid.className = 'results-grid';
+
+      filteredData.forEach(row => {
+        const card = createCard(row, userLoc);
+        grid.appendChild(card);
+      });
+
+      container.innerHTML = '';
+      container.appendChild(grid);
+    }
+
+    // Create a result card
+    function createCard(row, userLoc) {
+      const card = document.createElement('div');
+      card.className = 'result-card';
+
+      // Get visible headers for display
+      const visibleHeaders = getVisibleHeaders();
+
+      // Use first visible column as title, second as subtitle
+      const title = row[visibleHeaders[0]] || 'Untitled';
+      const subtitle = visibleHeaders[1] ? (row[visibleHeaders[1]] || '') : '';
+
+      // Get image URL from the image column and convert to direct URL
+      const imageColumn = getImageColumn();
+      const rawImageUrl = imageColumn ? row[imageColumn] : null;
+      const imageUrl = convertToDirectImageUrl(rawImageUrl);
+
+      // Get first letter for fallback placeholder
+      const firstLetter = String(title).charAt(0).toUpperCase();
+
+      // Calculate distance if user location is available
+      const latColumn = headers.find(h => h.toLowerCase() === 'latitude' || h.toLowerCase() === 'lat');
+      const lngColumn = headers.find(h => h.toLowerCase() === 'longitude' || h.toLowerCase() === 'lng' || h.toLowerCase() === 'long');
+      const adventureLat = latColumn ? parseFloat(row[latColumn]) : null;
+      const adventureLng = lngColumn ? parseFloat(row[lngColumn]) : null;
+      
+      let distanceHTML = '';
+      if (userLoc && adventureLat && adventureLng && !isNaN(adventureLat) && !isNaN(adventureLng)) {
+        const distance = calculateDistanceFromCoords(userLoc.lat, userLoc.lng, adventureLat, adventureLng);
+        if (distance !== null && !isNaN(distance) && isFinite(distance)) {
+          distanceHTML = `<div class="card-distance">${Math.round(distance)} miles away</div>`;
+        }
+      }
+
+      // Build details section (show up to 4 additional visible fields)
+      let detailsHTML = '';
+      const detailHeaders = visibleHeaders.slice(2, 6);
+      
+      detailHeaders.forEach(header => {
+        if (row[header]) {
+          detailsHTML += `
+            <div class="card-detail">
+              <span class="card-detail-label">${header}</span>
+              <span class="card-detail-value">${row[header]}</span>
+            </div>
+          `;
+        }
+      });
+
+      // Build image HTML - use actual image if available, otherwise show placeholder
+      let imageHTML;
+      if (imageUrl) {
+        // Use img tag with onerror fallback for failed image loads (e.g., Google Drive auth issues)
+        imageHTML = `<div class="card-image" data-letter="${firstLetter}"><img src="${escapeHTML(imageUrl)}" onerror="this.parentElement.style.backgroundImage='none'; this.style.display='none'; this.parentElement.innerHTML='${firstLetter}';" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;z-index:1;">${distanceHTML}</div>`;
+      } else {
+        imageHTML = `<div class="card-image">${firstLetter}${distanceHTML}</div>`;
+      }
+
+      card.innerHTML = `
+        ${imageHTML}
+        <div class="card-content">
+          <h3 class="card-title">${escapeHTML(title)}</h3>
+          ${subtitle ? `<p class="card-subtitle">${escapeHTML(subtitle)}</p>` : ''}
+          ${detailsHTML ? `<div class="card-details">${detailsHTML}</div>` : ''}
+        </div>
+      `;
+
+      // Add click handler to show modal with details
+      card.onclick = () => showDetails(row);
+
+      return card;
+    }
+
+    // Helper to find column by partial name match (case-insensitive)
+    function findColumn(searchTerms) {
+      return headers.find(h => 
+        searchTerms.some(term => h.toLowerCase().includes(term.toLowerCase()))
+      );
+    }
+
+    // Show modal with details
+    function showDetails(row) {
+      // Get the title (first visible column)
+      const visibleHeaders = getVisibleHeaders();
+      const title = row[visibleHeaders[0]] || 'Untitled';
+      
+      // Generate direct link for this adventure
+      const directLink = 'https://www.wheretogoscouting.com/explore?adventure=' + encodeURIComponent(title);
+
+      // Get image
+      const imageColumn = getImageColumn();
+      const rawImageUrl = imageColumn ? row[imageColumn] : null;
+      const imageUrl = convertToDirectImageUrl(rawImageUrl);
+
+      // Get values using exact column names
+      const description = row['Description'] || '';
+      const cost = row['Cost'] || '';
+      const season = row['Season'] || '';
+      const duration = row['Duration'] || '';
+      const activityUrl = row['Activity URL'] || '';
+      const safetyNotes = row['Safety Notes'] || '';
+      const firstName = row['First Name'] || '';
+      const position = row['Position'] || '';
+      const unitType = row['Unit Type'] || '';
+      const unitNumber = row['Unit Number'] || '';
+      const council = row['Council'] || '';
+
+      // Build modal HTML
+      const modalHTML = `
+        <div class="modal-overlay" onclick="closeModal(event)">
+          <div class="modal" onclick="event.stopPropagation()">
+            ${imageUrl ? `
+              <div class="modal-image" style="background-image: url('${escapeHTML(imageUrl)}');">
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+              </div>
+            ` : `
+              <div style="position: relative; padding: 16px;">
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+              </div>
+            `}
+            <div class="modal-content">
+              <h2 class="modal-title">${escapeHTML(title)}</h2>
+              
+              <div class="modal-details">
+                ${cost ? `
+                  <div class="modal-detail">
+                    <span class="modal-detail-label">Cost</span>
+                    <span class="modal-detail-value">${escapeHTML(cost)}</span>
+                  </div>
+                ` : ''}
+                ${season ? `
+                  <div class="modal-detail">
+                    <span class="modal-detail-label">Season</span>
+                    <span class="modal-detail-value">${escapeHTML(season)}</span>
+                  </div>
+                ` : ''}
+                ${duration ? `
+                  <div class="modal-detail">
+                    <span class="modal-detail-label">Duration</span>
+                    <span class="modal-detail-value">${escapeHTML(duration)}</span>
+                  </div>
+                ` : ''}
+              </div>
+
+              ${description ? `
+                <div class="modal-section">
+                  <h3 class="modal-section-title">Escapade Exposition</h3>
+                  <p class="modal-section-content">${escapeHTML(description)}</p>
+                </div>
+              ` : ''}
+
+              ${safetyNotes ? `
+                <div class="modal-section">
+                  <h3 class="modal-section-title">Safety Notes</h3>
+                  <p class="modal-section-content">${escapeHTML(safetyNotes)}</p>
+                </div>
+              ` : ''}
+
+              ${(firstName || position || unitType || unitNumber || council) ? `
+                <div class="modal-section">
+                  <h3 class="modal-section-title">Respectfully Submitted By</h3>
+                  <p class="modal-section-content">${escapeHTML(firstName)}${firstName && position ? ' - ' : ''}${escapeHTML(position)} ${escapeHTML(unitType)} ${escapeHTML(unitNumber)}${unitNumber && council ? ' - ' : ''}${council ? escapeHTML(council) : ''}</p>
+                </div>
+              ` : ''}
+
+              ${activityUrl ? `
+                <a href="${escapeHTML(activityUrl)}" target="_blank" rel="noopener noreferrer" class="activity-link">
+                  View Activity Details →
+                </a>
+              ` : ''}
+              
+              <div class="share-buttons">
+                <span>Share this adventure:</span>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(directLink)}&quote=${encodeURIComponent('Check out ' + title + ' on Where To Go Scouting!')}" target="_blank" class="share-btn facebook" title="Share on Facebook">
+                  <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+                <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent('Check out ' + title + ' on Where To Go Scouting! 🏕️')}&url=${encodeURIComponent(directLink)}" target="_blank" class="share-btn twitter" title="Share on X">
+                  <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+                <a href="https://pinterest.com/pin/create/button/?url=${encodeURIComponent(directLink)}&description=${encodeURIComponent('Check out ' + title + ' on Where To Go Scouting! 🏕️')}" target="_blank" class="share-btn pinterest" title="Share on Pinterest">
+                  <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
+                </a>
+                <a href="https://wa.me/?text=${encodeURIComponent('Check out ' + title + ' on Where To Go Scouting! 🏕️\\n\\n' + directLink)}" target="_blank" class="share-btn whatsapp" title="Share on WhatsApp">
+                  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                </a>
+                <a href="mailto:?subject=${encodeURIComponent('Check out ' + title + ' - a Scouting Adventure!')}&body=${encodeURIComponent('I found this great adventure on Where To Go Scouting!\\n\\n' + title + '\\n\\nClick here to view it: ' + directLink)}" class="share-btn email" title="Share via Email">
+                  <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                </a>
+                <a href="https://discord.com/channels/@me" onclick="copyToClipboard('Check out ${escapeHTML(title).replace(/'/g, "\\'")} on Where To Go Scouting! 🏕️\\n\\n${directLink.replace(/'/g, "\\'")}', this); return false;" class="share-btn discord" title="Copy for Discord">
+                  <svg viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/></svg>
+                </a>
+                <button onclick="copyToClipboard('${directLink.replace(/'/g, "\\'")}', this)" class="share-btn copy-link" title="Copy Direct Link">
+                  <svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Add modal to body
+      const modalContainer = document.createElement('div');
+      modalContainer.id = 'modalContainer';
+      modalContainer.innerHTML = modalHTML;
+      document.body.appendChild(modalContainer);
+
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Copy to clipboard function for sharing
+    function copyToClipboard(text, button) {
+      navigator.clipboard.writeText(text).then(() => {
+        button.classList.add('copied');
+        const originalTitle = button.title;
+        button.title = 'Copied!';
+        setTimeout(() => {
+          button.classList.remove('copied');
+          button.title = originalTitle;
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy link. Please copy manually: ' + text);
+      });
+    }
+
+    // Close modal
+    function closeModal(event) {
+      if (event && event.target !== event.currentTarget) return;
+      const modalContainer = document.getElementById('modalContainer');
+      if (modalContainer) {
+        modalContainer.remove();
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // Escape HTML to prevent XSS
+    function escapeHTML(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+  </script>
+
+</body>
+</html>
