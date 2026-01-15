@@ -672,7 +672,7 @@
 
       const categories = Object.keys(categoryCounts).sort();
       categories.forEach(category => {
-        categoryVisibility[category] = true;
+        categoryVisibility[category] = (category === 'National High Adventure Base');
       });
 
       const filterContainer = document.getElementById('categoryFilters');
@@ -1063,7 +1063,7 @@
 
     function gm_authFailure() {
       document.getElementById('loadingOverlay').innerHTML = `
-        <p style="color: #c53030;">Google Maps API authentication failed.womp womp</p>
+        <p style="color: #c53030;">Google Maps API authentication failed.</p>
       `;
     }
   </script>
