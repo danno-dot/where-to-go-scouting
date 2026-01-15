@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Database</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    /* Header / Search Section */
+    .search-header {
+      background: #000000;
+      padding: 40px 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .search-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .search-title {
+      color: white;
+      font-family: 'Roboto Slab', serif;
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 280px;
+      max-width: 500px;
+      padding: 16px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      outline: none;
+      transition: box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+
+    .search-btn {
+      padding: 16px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      background: #FFCE00;
+      color: black;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .search-btn:hover {
+      background: #e6b800;
+    }
+
+    .search-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Filters Row */
+    .filters-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .filter-select {
+      padding: 10px 16px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      min-width: 150px;
+    }
+
+    .zip-input {
+      padding: 10px 16px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      background: white;
+      width: 140px;
+    }
+
+    .zip-input::placeholder {
+      color: #999;
+    }
+
+    /* Results Section */
+    .results-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .results-count {
+      font-size: 18px;
+      color: #333;
+    }
+
+    .results-count span {
+      font-weight: 700;
+      color: #1a365d;
+    }
+
+    .sort-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sort-controls label {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .sort-select {
+      padding: 8px 12px;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+    }
+
+    /* Results Grid */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    /* Result Card */
+    .result-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .result-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .card-image {
+      height: 180px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 48px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .photo-credit {
+      font-size: 11px;
+      color: #888;
+      padding: 4px 12px;
+      background: #f9f9f9;
+      font-style: italic;
+    }
+
+    .card-content {
+      padding: 20px;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 16px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-image {
+      height: 250px;
+      background-size: cover;
+      background-position: center;
+      background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      background: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .modal-close:hover {
+      background: #f0f0f0;
+    }
+
+    .modal-content {
+      padding: 24px;
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1a365d;
+      margin-bottom: 16px;
+    }
+
+    .modal-description {
+      font-size: 15px;
+      color: #444;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .modal-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #eee;
+    }
+
+    .modal-detail {
+      font-size: 14px;
+    }
+
+    .modal-detail-label {
+      color: #888;
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .modal-detail-value {
+      color: #333;
+      font-weight: 500;
+    }
+
+    .modal-contact {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #eee;
+    }
+
+    .modal-contact-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a365d;
+      margin-bottom: 8px;
+    }
+
+    .modal-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #eee;
+    }
+
+    .modal-section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a365d;
+      margin-bottom: 12px;
+    }
+
+    .modal-section-content {
+      font-size: 15px;
+      color: #444;
+      line-height: 1.6;
+    }
+
+    .activity-link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: #1a365d;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .activity-link:hover {
+      background: #2d4a77;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a365d;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .card-subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+
+    .card-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #eee;
+    }
+
+    .card-detail {
+      font-size: 13px;
+    }
+
+    .card-detail-label {
+      color: #888;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .card-detail-value {
+      color: #333;
+      font-weight: 500;
+    }
+
+    /* Share Buttons */
+    .share-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #eee;
+    }
+
+    .share-section-title {
+      font-size: 13px;
+      color: #718096;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .share-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      text-decoration: none;
+      transition: transform 0.2s, opacity 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .share-btn:hover {
+      transform: scale(1.1);
+      opacity: 0.9;
+    }
+
+    .share-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    .share-btn.facebook {
+      background: #1877F2;
+    }
+
+    .share-btn.twitter {
+      background: #000000;
+    }
+
+    .share-btn.pinterest {
+      background: #E60023;
+    }
+
+    .share-btn.whatsapp {
+      background: #25D366;
+    }
+
+    .share-btn.email {
+      background: #EA4335;
+    }
+
+    .share-btn.discord {
+      background: #5865F2;
+    }
+
+    .share-btn.copy-link {
+      background: #718096;
+    }
+
+    .share-btn.copy-link.copied {
+      background: #48BB78;
+    }
+
+    /* Loading State */
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #e2e8f0;
+      border-top-color: #1a365d;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+
+    /* Error State */
+    .error-state {
+      text-align: center;
+      padding: 40px 20px;
+      background: #fff5f5;
+      border-radius: 12px;
+      color: #c53030;
+    }
+
+    /* Setup Instructions */
+    .setup-instructions {
+      background: #fffbeb;
+      border: 1px solid #f6e05e;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .setup-instructions h3 {
+      color: #975a16;
+      margin-bottom: 12px;
+    }
+
+    .setup-instructions ol {
+      margin-left: 20px;
+      color: #744210;
+    }
+
+    .setup-instructions li {
+      margin-bottom: 8px;
+    }
+
+    .setup-instructions code {
+      background: #fefcbf;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .search-title {
+        font-size: 22px;
+      }
+      
+      .search-input {
+        min-width: 100%;
+      }
+      
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Results Section -->
+  <main class="results-section">
+    <!-- Results Grid -->
+    <div id="resultsContainer">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading data from Google Sheets...</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ============================================
+    // CONFIGURATION
+    // ============================================
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyAuWMOtbz5ZyoV4LNKLBMi9-HdKEYo_bsCykVpn639RE2Z6l4oHjpt_Qtf_EXaWtnDSA/exec';
+    
+    // Base URL for sharing (links to the explore/search page)
+    const EXPLORE_BASE_URL = 'https://www.wheretogoscouting.com/explore';
+    // ============================================
+
+    // Global state
+    let allData = [];
+    let filteredData = [];
+    let headers = [];
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadZipCodeData();
+      fetchData();
+    });
+
+    // Fetch data from Google Apps Script
+    async function fetchData() {
+      const container = document.getElementById('resultsContainer');
+      
+      // Check if URL is configured
+      if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+        container.innerHTML = `
+          <div class="setup-instructions">
+            <h3>⚠️ Setup Required</h3>
+            <ol>
+              <li>Open your Google Sheet</li>
+              <li>Go to <strong>Extensions → Apps Script</strong></li>
+              <li>Paste the Google Apps Script code provided</li>
+              <li>Click <strong>Deploy → New deployment</strong></li>
+              <li>Select type: <strong>Web app</strong></li>
+              <li>Set "Execute as": <strong>Me</strong></li>
+              <li>Set "Who has access": <strong>Anyone</strong></li>
+              <li>Click <strong>Deploy</strong> and copy the Web App URL</li>
+              <li>Open this HTML file and replace <code>YOUR_GOOGLE_APPS_SCRIPT_URL_HERE</code> with your URL</li>
+              <li>Refresh this page</li>
+            </ol>
+          </div>
+        `;
+        document.getElementById('resultsCount').textContent = 'Setup required';
+        return;
+      }
+
+      try {
+        container.innerHTML = `
+          <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading data from Google Sheets...</p>
+          </div>
+        `;
+
+        const response = await fetch(GOOGLE_SCRIPT_URL);
+        const data = await response.json();
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        headers = data.headers;
+        // Filter to only show entries with "featured" in Published Status
+        allData = data.rows.filter(row => {
+          const status = (row['Published Status'] || '').toLowerCase().trim();
+          return status === 'featured';
+        });
+        filteredData = [...allData];
+
+        renderResults();
+
+      } catch (error) {
+        container.innerHTML = `
+          <div class="error-state">
+            <h3>Error Loading Data</h3>
+            <p>${error.message}</p>
+            <p style="margin-top: 12px; font-size: 14px;">
+              Make sure your Google Apps Script is deployed correctly and the URL is correct.
+            </p>
+          </div>
+        `;
+        document.getElementById('resultsCount').textContent = 'Error loading data';
+      }
+    }
+
+    // Columns to hide from UI (exact matches and partial matches)
+    const HIDDEN_COLUMNS = ['id', 'ID', 'Image URL', 'image url', 'imageurl', 'google image url', 'photo url', 'picture url', 'Zip Code', 'zip code', 'zipcode'];
+    
+    // Check if a column should be hidden
+    function isHiddenColumn(header) {
+      return HIDDEN_COLUMNS.some(hidden => header.toLowerCase().includes(hidden.toLowerCase()));
+    }
+
+    // Get the image URL column name (if it exists)
+    function getImageColumn() {
+      // First try exact match for "Image URL"
+      const exactMatch = headers.find(h => h === 'Image URL');
+      if (exactMatch) return exactMatch;
+      
+      // Fallback to partial matching
+      return headers.find(h => 
+        h.toLowerCase().includes('image') || 
+        h.toLowerCase().includes('photo') || 
+        h.toLowerCase().includes('picture')
+      );
+    }
+
+    // Convert Google Drive URLs to direct image URLs
+    function convertToDirectImageUrl(url) {
+      if (!url) return null;
+      
+      let fileId = null;
+      
+      const openIdMatch = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
+      if (openIdMatch) {
+        fileId = openIdMatch[1];
+      }
+      
+      const fileDMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+      if (fileDMatch) {
+        fileId = fileDMatch[1];
+      }
+      
+      const ucIdMatch = url.match(/drive\.google\.com\/uc\?.*id=([a-zA-Z0-9_-]+)/);
+      if (ucIdMatch) {
+        fileId = ucIdMatch[1];
+      }
+      
+      if (fileId) {
+        return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
+      }
+      
+      return url;
+    }
+
+    // Get visible headers (excluding hidden columns)
+    function getVisibleHeaders() {
+      return headers.filter(h => !isHiddenColumn(h));
+    }
+
+    // Zip code database for distance calculations
+    let zipCodeData = {};
+    
+    // Load zip code data
+    async function loadZipCodeData() {
+      try {
+        const response = await fetch('https://raw.githubusercontent.com/millbj92/US-Zip-Codes-JSON/master/USCities.json');
+        const data = await response.json();
+        data.forEach(item => {
+          zipCodeData[item.zip_code] = { lat: item.lat, lng: item.lng };
+        });
+      } catch (error) {
+        console.log('Could not load zip code data, distance sorting disabled');
+      }
+    }
+
+    // Calculate distance between two zip codes (in miles)
+    function calculateDistance(zip1, zip2) {
+      const loc1 = zipCodeData[zip1];
+      const loc2 = zipCodeData[zip2];
+      
+      if (!loc1 || !loc2) return Infinity;
+      
+      const R = 3959;
+      const dLat = (loc2.lat - loc1.lat) * Math.PI / 180;
+      const dLng = (loc2.lng - loc1.lng) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(loc1.lat * Math.PI / 180) * Math.cos(loc2.lat * Math.PI / 180) *
+                Math.sin(dLng/2) * Math.sin(dLng/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    }
+
+    // Setup filter dropdowns based on data
+    function setupFilters() {
+      const filtersRow = document.getElementById('filtersRow');
+      filtersRow.innerHTML = '';
+
+      const regionHeader = headers.find(h => h.toLowerCase() === 'region');
+      
+      if (regionHeader) {
+        const uniqueRegions = [...new Set(allData.map(row => row[regionHeader]))].filter(v => v !== '').sort();
+        
+        if (uniqueRegions.length > 0) {
+          const select = document.createElement('select');
+          select.className = 'filter-select';
+          select.id = 'filter-region';
+          select.innerHTML = `<option value="">All Regions</option>`;
+          
+          uniqueRegions.forEach(value => {
+            select.innerHTML += `<option value="${value}">${value}</option>`;
+          });
+          
+          select.onchange = performSearch;
+          filtersRow.appendChild(select);
+        }
+      }
+
+      const categoryHeader = headers.find(h => h.toLowerCase() === 'category');
+      
+      if (categoryHeader) {
+        const uniqueCategories = [...new Set(allData.map(row => row[categoryHeader]))].filter(v => v !== '').sort();
+        
+        if (uniqueCategories.length > 0) {
+          const select = document.createElement('select');
+          select.className = 'filter-select';
+          select.id = 'filter-category';
+          select.innerHTML = `<option value="">All Categories</option>`;
+          
+          uniqueCategories.forEach(value => {
+            select.innerHTML += `<option value="${value}">${value}</option>`;
+          });
+          
+          select.onchange = performSearch;
+          filtersRow.appendChild(select);
+        }
+      }
+
+      const zipInput = document.createElement('input');
+      zipInput.type = 'text';
+      zipInput.className = 'zip-input';
+      zipInput.id = 'zip-input';
+      zipInput.placeholder = 'Your Zip Code';
+      zipInput.maxLength = 5;
+      zipInput.onkeyup = (e) => {
+        if (e.target.value.length === 5 || e.target.value.length === 0) {
+          performSearch();
+        }
+      };
+      filtersRow.appendChild(zipInput);
+    }
+
+    // Perform search and filter
+    function performSearch() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+      
+      const filters = {};
+      
+      const regionFilter = document.getElementById('filter-region');
+      if (regionFilter && regionFilter.value) {
+        const regionHeader = headers.find(h => h.toLowerCase() === 'region');
+        if (regionHeader) filters[regionHeader] = regionFilter.value;
+      }
+      
+      const categoryFilter = document.getElementById('filter-category');
+      if (categoryFilter && categoryFilter.value) {
+        const categoryHeader = headers.find(h => h.toLowerCase() === 'category');
+        if (categoryHeader) filters[categoryHeader] = categoryFilter.value;
+      }
+      
+      getVisibleHeaders().forEach(header => {
+        if (header.toLowerCase() !== 'region' && header.toLowerCase() !== 'category') {
+          const filterEl = document.getElementById(`filter-${header}`);
+          if (filterEl && filterEl.value) {
+            filters[header] = filterEl.value;
+          }
+        }
+      });
+
+      filteredData = allData.filter(row => {
+        if (searchTerm) {
+          const matchesSearch = getVisibleHeaders().some(header => 
+            String(row[header]).toLowerCase().includes(searchTerm)
+          );
+          if (!matchesSearch) return false;
+        }
+
+        for (const [header, value] of Object.entries(filters)) {
+          if (row[header] != value) return false;
+        }
+
+        return true;
+      });
+
+      const userZip = document.getElementById('zip-input')?.value?.trim();
+      if (userZip && userZip.length === 5) {
+        filteredData.sort((a, b) => {
+          const distA = calculateDistance(userZip, String(a['Zip Code'] || '').trim());
+          const distB = calculateDistance(userZip, String(b['Zip Code'] || '').trim());
+          return distA - distB;
+        });
+      }
+
+      renderResults();
+    }
+
+    // Render results as cards
+    function renderResults() {
+      const container = document.getElementById('resultsContainer');
+      const countEl = document.getElementById('resultsCount');
+
+      if (filteredData.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <h3>No results found</h3>
+            <p>Try adjusting your search or filters</p>
+          </div>
+        `;
+        if (countEl) countEl.innerHTML = `<span>0</span> results`;
+        return;
+      }
+
+      if (countEl) countEl.innerHTML = `<span>${filteredData.length}</span> result${filteredData.length !== 1 ? 's' : ''}`;
+
+      const grid = document.createElement('div');
+      grid.className = 'results-grid';
+
+      filteredData.forEach(row => {
+        const card = createCard(row);
+        grid.appendChild(card);
+      });
+
+      container.innerHTML = '';
+      container.appendChild(grid);
+    }
+
+    // Create a result card
+    function createCard(row) {
+      const card = document.createElement('div');
+      card.className = 'result-card';
+
+      const visibleHeaders = getVisibleHeaders();
+
+      const title = row[visibleHeaders[0]] || 'Untitled';
+      const subtitle = visibleHeaders[1] ? (row[visibleHeaders[1]] || '') : '';
+
+      const imageColumn = getImageColumn();
+      const rawImageUrl = imageColumn ? row[imageColumn] : null;
+      const imageUrl = convertToDirectImageUrl(rawImageUrl);
+
+      const firstLetter = String(title).charAt(0).toUpperCase();
+
+      let detailsHTML = '';
+      const detailHeaders = visibleHeaders.slice(2, 6);
+      
+      detailHeaders.forEach(header => {
+        if (row[header]) {
+          detailsHTML += `
+            <div class="card-detail">
+              <span class="card-detail-label">${header}</span>
+              <span class="card-detail-value">${row[header]}</span>
+            </div>
+          `;
+        }
+      });
+
+      let imageHTML;
+      if (imageUrl) {
+        imageHTML = `<div class="card-image" style="background-image: url('${escapeHTML(imageUrl)}');"></div>`;
+      } else {
+        imageHTML = `<div class="card-image">${firstLetter}</div>`;
+      }
+
+      card.innerHTML = `
+        ${imageHTML}
+        <div class="card-content">
+          <h3 class="card-title">${escapeHTML(title)}</h3>
+          ${subtitle ? `<p class="card-subtitle">${escapeHTML(subtitle)}</p>` : ''}
+          ${detailsHTML ? `<div class="card-details">${detailsHTML}</div>` : ''}
+        </div>
+      `;
+
+      card.onclick = () => showDetails(row);
+
+      return card;
+    }
+
+    // Helper to find column by partial name match
+    function findColumn(searchTerms) {
+      return headers.find(h => 
+        searchTerms.some(term => h.toLowerCase().includes(term.toLowerCase()))
+      );
+    }
+
+    // Generate direct link to explore page for an adventure
+    function getAdventureDirectLink(adventureName) {
+      return EXPLORE_BASE_URL + '?adventure=' + encodeURIComponent(adventureName);
+    }
+
+    // Copy to clipboard function with iframe fallback
+    function copyToClipboard(text, button) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showCopySuccess(button);
+        }).catch(err => {
+          fallbackCopyToClipboard(text, button);
+        });
+      } else {
+        fallbackCopyToClipboard(text, button);
+      }
+    }
+    
+    function fallbackCopyToClipboard(text, button) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-9999px';
+      textArea.style.top = '-9999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          showCopySuccess(button);
+        } else {
+          prompt('Copy this link (Ctrl+C or Cmd+C):', text);
+        }
+      } catch (err) {
+        prompt('Copy this link (Ctrl+C or Cmd+C):', text);
+      }
+      
+      document.body.removeChild(textArea);
+    }
+    
+    function showCopySuccess(button) {
+      button.classList.add('copied');
+      const originalTitle = button.title;
+      button.title = 'Copied!';
+      setTimeout(() => {
+        button.classList.remove('copied');
+        button.title = originalTitle;
+      }, 2000);
+    }
+
+    // Show modal with details
+    function showDetails(row) {
+      const visibleHeaders = getVisibleHeaders();
+      const title = row[visibleHeaders[0]] || 'Untitled';
+
+      const imageColumn = getImageColumn();
+      const rawImageUrl = imageColumn ? row[imageColumn] : null;
+      const imageUrl = convertToDirectImageUrl(rawImageUrl);
+
+      const description = row['Description'] || '';
+      const cost = row['Cost'] || '';
+      const season = row['Season'] || '';
+      const duration = row['Duration'] || '';
+      const activityUrl = row['Activity URL'] || '';
+      const safetyNotes = row['Safety Notes'] || '';
+      const firstName = row['First Name'] || '';
+      const position = row['Position'] || '';
+      const unitType = row['Unit Type'] || '';
+      const unitNumber = row['Unit Number'] || '';
+      const council = row['Council'] || '';
+
+      // Generate direct link for sharing
+      const directLink = getAdventureDirectLink(title);
+      const escapedTitle = escapeHTML(title).replace(/'/g, "\\'");
+
+      const modalHTML = `
+        <div class="modal-overlay" onclick="closeModal(event)">
+          <div class="modal" onclick="event.stopPropagation()">
+            ${imageUrl ? `
+              <div class="modal-image" style="background-image: url('${escapeHTML(imageUrl)}');">
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+              </div>
+            ` : `
+              <div style="position: relative; padding: 16px;">
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+              </div>
+            `}
+            <div class="modal-content">
+              <h2 class="modal-title">${escapeHTML(title)}</h2>
+              
+              <div class="modal-details">
+                ${cost ? `
+                  <div class="modal-detail">
+                    <span class="modal-detail-label">Cost</span>
+                    <span class="modal-detail-value">${escapeHTML(cost)}</span>
+                  </div>
+                ` : ''}
+                ${season ? `
+                  <div class="modal-detail">
+                    <span class="modal-detail-label">Season</span>
+                    <span class="modal-detail-value">${escapeHTML(season)}</span>
+                  </div>
+                ` : ''}
+                ${duration ? `
+                  <div class="modal-detail">
+                    <span class="modal-detail-label">Duration</span>
+                    <span class="modal-detail-value">${escapeHTML(duration)}</span>
+                  </div>
+                ` : ''}
+              </div>
+
+              ${description ? `
+                <div class="modal-section">
+                  <h3 class="modal-section-title">Escapade Exposition</h3>
+                  <p class="modal-section-content">${escapeHTML(description)}</p>
+                </div>
+              ` : ''}
+
+              ${safetyNotes ? `
+                <div class="modal-section">
+                  <h3 class="modal-section-title">Safety Notes</h3>
+                  <p class="modal-section-content">${escapeHTML(safetyNotes)}</p>
+                </div>
+              ` : ''}
+
+              ${(firstName || position || unitType || unitNumber || council) ? `
+                <div class="modal-section">
+                  <h3 class="modal-section-title">Respectfully Submitted By</h3>
+                  <p class="modal-section-content">${escapeHTML(firstName)}${firstName && position ? ' - ' : ''}${escapeHTML(position)} ${escapeHTML(unitType)} ${escapeHTML(unitNumber)}${unitNumber && council ? ' - ' : ''}${council ? escapeHTML(council) : ''}</p>
+                </div>
+              ` : ''}
+
+              ${activityUrl ? `
+                <a href="${escapeHTML(activityUrl)}" target="_blank" rel="noopener noreferrer" class="activity-link">
+                  View Activity Details →
+                </a>
+              ` : ''}
+
+              <!-- Share Section -->
+              <div class="share-section">
+                <div class="share-section-title">Share this adventure:</div>
+                <div class="share-buttons">
+                  <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(directLink)}&quote=${encodeURIComponent('Check out ' + title + ' on Where To Go Scouting!')}" target="_blank" class="share-btn facebook" title="Share on Facebook">
+                    <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                  </a>
+                  <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent('Check out ' + title + ' on Where To Go Scouting! 🏕️')}&url=${encodeURIComponent(directLink)}" target="_blank" class="share-btn twitter" title="Share on X">
+                    <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  </a>
+                  <a href="https://pinterest.com/pin/create/button/?url=${encodeURIComponent(directLink)}&description=${encodeURIComponent('Check out ' + title + ' on Where To Go Scouting! 🏕️')}" target="_blank" class="share-btn pinterest" title="Share on Pinterest">
+                    <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
+                  </a>
+                  <a href="https://wa.me/?text=${encodeURIComponent('Check out ' + title + ' on Where To Go Scouting! 🏕️\n\n' + directLink)}" target="_blank" class="share-btn whatsapp" title="Share on WhatsApp">
+                    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                  </a>
+                  <a href="mailto:?subject=${encodeURIComponent('Check out ' + title + ' - a Scouting Adventure!')}&body=${encodeURIComponent('I found this great adventure on Where To Go Scouting!\n\n' + title + '\n\nClick here to view it: ' + directLink)}" class="share-btn email" title="Share via Email">
+                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                  </a>
+                  <a href="https://discord.com/channels/@me" onclick="copyToClipboard('Check out ${escapedTitle} on Where To Go Scouting! 🏕️\\n\\n${directLink}', this); return false;" class="share-btn discord" title="Copy for Discord">
+                    <svg viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/></svg>
+                  </a>
+                  <button onclick="copyToClipboard('${directLink}', this)" class="share-btn copy-link" title="Copy Direct Link">
+                    <svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const modalContainer = document.createElement('div');
+      modalContainer.id = 'modalContainer';
+      modalContainer.innerHTML = modalHTML;
+      document.body.appendChild(modalContainer);
+
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close modal
+    function closeModal(event) {
+      if (event && event.target !== event.currentTarget) return;
+      const modalContainer = document.getElementById('modalContainer');
+      if (modalContainer) {
+        modalContainer.remove();
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // Escape HTML to prevent XSS
+    function escapeHTML(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+  </script>
+
+</body>
+</html>
