@@ -206,20 +206,12 @@
       background: #000000;
     }
 
-    .share-btn.pinterest {
-      background: #E60023;
-    }
-
     .share-btn.whatsapp {
       background: #25D366;
     }
 
     .share-btn.discord {
       background: #5865F2;
-    }
-
-    .share-btn.email {
-      background: #EA4335;
     }
 
     .share-btn.copy-link {
@@ -528,11 +520,9 @@
     // Configuration
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyAuWMOtbz5ZyoV4LNKLBMi9-HdKEYo_bsCykVpn639RE2Z6l4oHjpt_Qtf_EXaWtnDSA/exec';
     
-    // Base URL for sharing (links to the explore/search page)
-    const EXPLORE_BASE_URL = 'https://www.wheretogoscouting.com/explore';
-    
     // Category SVG icons (as data URIs)
     const CATEGORY_ICONS = {
+      'Caving / Spelunking': 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 382.87 382.87"><defs><style>.st0{fill:#f04d27;}.st1{fill:#231f20;stroke:#f04d27;stroke-miterlimit:10;stroke-width:8px;}</style></defs><circle class="st1" cx="191.43" cy="191.4" r="187.44"/><g><path class="st0" d="M83.78,245.27c-18.19.23-32.23,4.28-26.39-20.02l95.21-19.85c11.92,34.64,48.33,41.79,72.7,13.57,3.13-3.62,4.23-11.33,9.83-11.64,18.74,10.49,108.95,1.58,88.75,36.28l-24.2,1.66"/><path class="st0" d="M310.57,203.53l-75.16-14.63c-11.83-50.12-75.4-52.51-84.83-.2l-73.91,14.14-3.68-1.98c16.49-142.21,224.51-140.37,237.58,2.67Z"/><path class="st0" d="M192.01,167.89c25.35-.69,33.72,38.65,8.93,48.49-35.39,14.05-45.35-47.5-8.93-48.49Z"/></g></svg>'),
       'Camping': 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 382.87 382.87"><defs><style>.cls-1{fill:#1fbb00;stroke:#f2f2f2;stroke-miterlimit:10;stroke-width:8px;}.cls-2{fill:#e6e7e8;}</style></defs><circle class="cls-1" cx="191.44" cy="191.44" r="187.44"/><path class="cls-2" d="M310.78,263.8c-.34-.26-.81.05-.72.46,1.24,5.41,2.07,15.1-6.23,15.07-3.99-.01-25.4-.03-64.25-.07-3.11-.01-5.31-1.39-6.62-4.14-1.7-3.58-2.84-8.74-4.27-13.47-8.1-26.68-19.15-62.83-33.15-108.45-.89-2.9-2.63-6.1-6.41-4.82-.36.12-.65.37-.82.71-.89,1.77-1.36,2.76-1.42,2.95-12.59,41.14-25.03,81.87-37.32,122.19-1.03,3.37-3.62,5.06-7.78,5.07-34.12.05-54.86.04-62.23-.03-7.43-.07-6.07-16.21-5.42-20.92.06-.38-.38-.64-.69-.41-.74.55-1.3,1.34-1.69,2.37-.07.18-.15.35-.26.5-5.02,7.3-8.05,11.76-9.1,13.39-3.12,4.84-5.82,7.24-11.49,5.61-3.92-1.13-5.18-3.82-3.77-8.07.62-1.88,3.41-4.88,4.67-6.91,4.29-6.91,8.18-13.01,11.68-18.3,2.75-4.18,4.89-7.59,6.42-10.24,2.64-4.57,5.68-8.94,8.63-13.64,24.33-38.74,50.04-80.45,78.02-124.7,7.49-11.85,17.85-28.47,31.08-49.85,1.21-1.97,2.66-2.65,4.34-2.04,1.6.57,2.81,1.57,3.63,3,3.41,5.95,6.91,11.85,10.49,17.68,9.5,15.48,18.08,29.33,25.73,41.54,34.21,54.58,68.15,108.12,101.8,160.63,1.4,2.19,1.7,4.74.91,7.65-.1.39-.32.74-.62.99-3.7,3.16-7.82,3.11-11.67.39-.99-.69-2.15-1.97-3.48-3.84-3.06-4.29-4.81-6.73-5.24-7.32-1-1.36-1.92-2.35-2.75-2.98h0Z"/></svg>'),
       'Natural Point of Interest': 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 382.87 382.87"><defs><style>.cls-1{fill:#e6e7e8;}.cls-2{fill:#317700;stroke:#f2f2f2;stroke-miterlimit:10;stroke-width:8px;}</style></defs><circle class="cls-2" cx="191.44" cy="191.44" r="187.44"/><g><path class="cls-1" d="M354.36,243.57L225.78,75.64c-1.08-1.41-2.76-2.24-4.53-2.24h0c-1.78,0-3.45.83-4.54,2.24l-62.82,82.01,59.93,78.09c2.75,3.13,4.25,7.11,4.25,11.3,0,2-.36,3.92-1,5.71h132.75c2.17,0,4.16-1.23,5.12-3.18.96-1.95.74-4.27-.59-6Z"/><path class="cls-1" d="M200.94,252.75s-.03,0-.05,0H33.05c-2.18,0-4.16-1.24-5.12-3.19s-.73-4.28.59-6l83.92-109.34c1.08-1.41,2.76-2.23,4.53-2.23s3.45.83,4.53,2.23l83.55,108.86c.99,1.03,1.6,2.43,1.6,3.97,0,3.16-2.56,5.71-5.71,5.71Z"/></g></svg>'),
       'National Registry Historic Trail': 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 382.93 382.87"><defs><style>.cls-1{fill:#c69c6d;}.cls-2{stroke:#c69c6d;}.cls-2,.cls-3{fill:#736357;stroke-miterlimit:10;stroke-width:8px;}.cls-3{stroke:#f2f2f2;}</style></defs><circle class="cls-3" cx="191.49" cy="191.44" r="187.44"/><circle class="cls-2" cx="191.44" cy="191.44" r="187.44"/><g><path class="cls-1" d="M191.53,216.26c-2.43,0-4.86-.03-7.3.01-1.57.03-2.21-.74-2.37-2.25-1.52-15.05-5.63-29.4-11.82-43.16-5.09-11.33-10.82-22.37-15.46-33.9-1.96-4.87-2.79-9.99-3.05-15.23-1.11-22.23,7.17-41.54,18.69-59.81,5.61-8.88,12.37-16.92,18.87-25.13,1.88-2.38,2.46-2.29,4.39.12,7.29,9.11,14.76,18.08,20.83,28.09,7.53,12.43,13.36,25.57,16.23,39.9,2.53,12.62.42,24.68-4.38,36.42-3.52,8.61-7.73,16.91-11.48,25.42-5.92,13.42-10.84,27.19-12.56,41.9-.22,1.86-.57,3.7-.77,5.56-.16,1.44-.89,2.09-2.32,2.07-2.5-.03-5,0-7.5,0Z"/><path class="cls-1" d="M162.83,216.26c-2.36,0-4.73-.11-7.09.03-1.92.11-2.89-.63-3.53-2.42-2.4-6.72-6.23-12.53-11.5-17.36-7.67-7.03-16.5-10.8-27.11-9.87-15.58,1.38-21.09,16.7-16.49,27.61.85,2.02,2.35,3.76,3.48,5.67.43.73,1.33,1.48.67,2.42-.6.85-1.63,1.04-2.63.94-3.73-.36-7.43-.78-11-2.08-18.71-6.8-29.77-24.35-27.5-44.11,2.45-21.33,19.13-37.32,39.72-40.01,10.95-1.43,21.48-.25,31.52,4.32,8.55,3.89,15.78,9.59,21.5,17.04,9.48,12.36,14.92,26.52,17.99,41.67.9,4.42,1.67,8.86,2.07,13.35.22,2.46-.15,2.78-2.61,2.79-2.5.02-5,0-7.5,0Z"/><path class="cls-1" d="M323.14,182.88c-.03,18.63-12.7,34.77-30.77,39.26-2.91.72-5.81,1.36-8.83,1.21-2.03-.1-2.51-.88-1.52-2.62.76-1.32,1.54-2.65,2.43-3.88,6.55-9.1,2.35-22.2-5.61-27.18-3.39-2.12-7.21-2.8-11.12-3.05-8.07-.52-15.24,2.18-21.66,6.73-7.22,5.12-11.91,12.32-15.07,20.5-.69,1.79-1.57,2.49-3.48,2.45-4.86-.11-9.73-.03-14.6-.04-2.6,0-2.89-.25-2.66-2.9.54-6.02,1.7-11.95,3.02-17.84,2.69-11.99,7.48-23.07,14.44-33.21,9.78-14.24,23.27-22.5,40.26-25.19,7.74-1.22,15.36-.73,22.87,1.49,10.88,3.21,19.16,9.81,25.11,19.41,4.72,7.62,7.19,15.89,7.18,24.87Z"/><path class="cls-1" d="M169.85,285.24c-1.51.31-2.53,1.22-3.34,2.36-8.94,12.58-28.51,12.9-39.21,3.6-6.62-5.75-9.79-12.92-9.68-21.64.02-1.56.4-3.03.92-4.46.64-1.79,1.83-2.03,3.11-.58,1.47,1.66,2.76,3.48,4.51,4.89,9.03,7.29,21.53,6.45,30.36-1.93,3.44-3.27,5.97-7.13,8.03-11.32.9-1.83,1.96-2.71,4.13-2.69,15.43.09,30.86.08,46.3,0,2-.01,3.02.74,3.83,2.44,3.16,6.67,7.53,12.26,14.21,15.83,9.15,4.88,20.08,2.8,26.74-5.23.22-.27.41-.57.65-.81.88-.9,1.4-2.67,2.99-2.07,1.42.53,1.56,2.18,1.74,3.56,1.34,10.19-2.3,18.41-10.14,24.8-10.71,8.72-27.08,7.78-36.22-1.98-.94-1.01-1.69-2.2-2.54-3.29-.57-.74-1.29-1.5-2.25-1.22-1.15.34-.42,1.4-.45,2.13-.44,10.92-3.36,21-9.68,30.07-3.23,4.63-6.68,9.05-10.38,13.28-.88,1.01-1.79,1.41-2.79.28-6.69-7.64-13.29-15.36-17.06-24.98-2.62-6.7-4.07-13.65-3.81-21.02Z"/><path class="cls-1" d="M191.38,244.63c-13.75,0-27.51,0-41.26,0-5.6,0-9.91-3.79-10.34-9.07-.43-5.24,3.29-9.7,8.84-10.49,1.57-.22,3.18-.24,4.78-.24,25.63-.01,51.27,0,76.9-.01,1.95,0,3.9.11,5.78.59,4.88,1.25,7.59,5.64,6.97,11.04-.52,4.49-4.62,8.16-9.36,8.17-14.1.04-28.2.02-42.31.02Z"/></g></svg>'),
@@ -560,6 +550,7 @@
 
     // Fallback colors for categories without custom icons
     const CATEGORY_COLORS = {
+      'Caving / Spelunking': '#f04d27',
       'Natural Point of Interest': '#4CAF50',
       'National Registry Historic Trail': '#795548',
       'Climbing': '#FF5722',
@@ -601,39 +592,133 @@
         { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
         { elementType: "labels.text.fill", stylers: [{ color: "#616161" }] },
         { elementType: "labels.text.stroke", stylers: [{ color: "#f5f5f5" }] },
-        { featureType: "water", elementType: "geometry", stylers: [{ color: "#c9c9c9" }] }
+        { featureType: "administrative.land_parcel", elementType: "labels.text.fill", stylers: [{ color: "#bdbdbd" }] },
+        { featureType: "poi", elementType: "geometry", stylers: [{ color: "#eeeeee" }] },
+        { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
+        { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#e5e5e5" }] },
+        { featureType: "poi.park", elementType: "labels.text.fill", stylers: [{ color: "#9e9e9e" }] },
+        { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
+        { featureType: "road.arterial", elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
+        { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#dadada" }] },
+        { featureType: "road.highway", elementType: "labels.text.fill", stylers: [{ color: "#616161" }] },
+        { featureType: "road.local", elementType: "labels.text.fill", stylers: [{ color: "#9e9e9e" }] },
+        { featureType: "transit.line", elementType: "geometry", stylers: [{ color: "#e5e5e5" }] },
+        { featureType: "transit.station", elementType: "geometry", stylers: [{ color: "#eeeeee" }] },
+        { featureType: "water", elementType: "geometry", stylers: [{ color: "#c9c9c9" }] },
+        { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#9e9e9e" }] }
       ],
       retro: [
         { elementType: "geometry", stylers: [{ color: "#ebe3cd" }] },
         { elementType: "labels.text.fill", stylers: [{ color: "#523735" }] },
         { elementType: "labels.text.stroke", stylers: [{ color: "#f5f1e6" }] },
-        { featureType: "water", elementType: "geometry.fill", stylers: [{ color: "#b9d3c2" }] }
+        { featureType: "administrative", elementType: "geometry.stroke", stylers: [{ color: "#c9b2a6" }] },
+        { featureType: "administrative.land_parcel", elementType: "geometry.stroke", stylers: [{ color: "#dcd2be" }] },
+        { featureType: "administrative.land_parcel", elementType: "labels.text.fill", stylers: [{ color: "#ae9e90" }] },
+        { featureType: "landscape.natural", elementType: "geometry", stylers: [{ color: "#dfd2ae" }] },
+        { featureType: "poi", elementType: "geometry", stylers: [{ color: "#dfd2ae" }] },
+        { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#93817c" }] },
+        { featureType: "poi.park", elementType: "geometry.fill", stylers: [{ color: "#a5b076" }] },
+        { featureType: "poi.park", elementType: "labels.text.fill", stylers: [{ color: "#447530" }] },
+        { featureType: "road", elementType: "geometry", stylers: [{ color: "#f5f1e6" }] },
+        { featureType: "road.arterial", elementType: "geometry", stylers: [{ color: "#fdfcf8" }] },
+        { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#f8c967" }] },
+        { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#e9bc62" }] },
+        { featureType: "road.highway.controlled_access", elementType: "geometry", stylers: [{ color: "#e98d58" }] },
+        { featureType: "road.highway.controlled_access", elementType: "geometry.stroke", stylers: [{ color: "#db8555" }] },
+        { featureType: "road.local", elementType: "labels.text.fill", stylers: [{ color: "#806b63" }] },
+        { featureType: "transit.line", elementType: "geometry", stylers: [{ color: "#dfd2ae" }] },
+        { featureType: "transit.line", elementType: "labels.text.fill", stylers: [{ color: "#8f7d77" }] },
+        { featureType: "transit.line", elementType: "labels.text.stroke", stylers: [{ color: "#ebe3cd" }] },
+        { featureType: "transit.station", elementType: "geometry", stylers: [{ color: "#dfd2ae" }] },
+        { featureType: "water", elementType: "geometry.fill", stylers: [{ color: "#b9d3c2" }] },
+        { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#92998d" }] }
       ],
       dark: [
         { elementType: "geometry", stylers: [{ color: "#212121" }] },
+        { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
         { elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
-        { featureType: "water", elementType: "geometry", stylers: [{ color: "#000000" }] }
+        { elementType: "labels.text.stroke", stylers: [{ color: "#212121" }] },
+        { featureType: "administrative", elementType: "geometry", stylers: [{ color: "#757575" }] },
+        { featureType: "administrative.country", elementType: "labels.text.fill", stylers: [{ color: "#9e9e9e" }] },
+        { featureType: "administrative.land_parcel", stylers: [{ visibility: "off" }] },
+        { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#bdbdbd" }] },
+        { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
+        { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#181818" }] },
+        { featureType: "poi.park", elementType: "labels.text.fill", stylers: [{ color: "#616161" }] },
+        { featureType: "poi.park", elementType: "labels.text.stroke", stylers: [{ color: "#1b1b1b" }] },
+        { featureType: "road", elementType: "geometry.fill", stylers: [{ color: "#2c2c2c" }] },
+        { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#8a8a8a" }] },
+        { featureType: "road.arterial", elementType: "geometry", stylers: [{ color: "#373737" }] },
+        { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#3c3c3c" }] },
+        { featureType: "road.highway.controlled_access", elementType: "geometry", stylers: [{ color: "#4e4e4e" }] },
+        { featureType: "road.local", elementType: "labels.text.fill", stylers: [{ color: "#616161" }] },
+        { featureType: "transit", elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
+        { featureType: "water", elementType: "geometry", stylers: [{ color: "#000000" }] },
+        { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#3d3d3d" }] }
       ],
       night: [
         { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
         { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
-        { featureType: "water", elementType: "geometry", stylers: [{ color: "#17263c" }] }
+        { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+        { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#d59563" }] },
+        { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#d59563" }] },
+        { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#263c3f" }] },
+        { featureType: "poi.park", elementType: "labels.text.fill", stylers: [{ color: "#6b9a76" }] },
+        { featureType: "road", elementType: "geometry", stylers: [{ color: "#38414e" }] },
+        { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#212a37" }] },
+        { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#9ca5b3" }] },
+        { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#746855" }] },
+        { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#1f2835" }] },
+        { featureType: "road.highway", elementType: "labels.text.fill", stylers: [{ color: "#f3d19c" }] },
+        { featureType: "transit", elementType: "geometry", stylers: [{ color: "#2f3948" }] },
+        { featureType: "transit.station", elementType: "labels.text.fill", stylers: [{ color: "#d59563" }] },
+        { featureType: "water", elementType: "geometry", stylers: [{ color: "#17263c" }] },
+        { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#515c6d" }] },
+        { featureType: "water", elementType: "labels.text.stroke", stylers: [{ color: "#17263c" }] }
       ],
       aubergine: [
         { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
         { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
-        { featureType: "water", elementType: "geometry", stylers: [{ color: "#0e1626" }] }
+        { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
+        { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#4b6878" }] },
+        { featureType: "administrative.land_parcel", elementType: "labels.text.fill", stylers: [{ color: "#64779e" }] },
+        { featureType: "administrative.province", elementType: "geometry.stroke", stylers: [{ color: "#4b6878" }] },
+        { featureType: "landscape.man_made", elementType: "geometry.stroke", stylers: [{ color: "#334e87" }] },
+        { featureType: "landscape.natural", elementType: "geometry", stylers: [{ color: "#023e58" }] },
+        { featureType: "poi", elementType: "geometry", stylers: [{ color: "#283d6a" }] },
+        { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#6f9ba5" }] },
+        { featureType: "poi", elementType: "labels.text.stroke", stylers: [{ color: "#1d2c4d" }] },
+        { featureType: "poi.park", elementType: "geometry.fill", stylers: [{ color: "#023e58" }] },
+        { featureType: "poi.park", elementType: "labels.text.fill", stylers: [{ color: "#3C7680" }] },
+        { featureType: "road", elementType: "geometry", stylers: [{ color: "#304a7d" }] },
+        { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#98a5be" }] },
+        { featureType: "road", elementType: "labels.text.stroke", stylers: [{ color: "#1d2c4d" }] },
+        { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#2c6675" }] },
+        { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#255763" }] },
+        { featureType: "road.highway", elementType: "labels.text.fill", stylers: [{ color: "#b0d5ce" }] },
+        { featureType: "road.highway", elementType: "labels.text.stroke", stylers: [{ color: "#023e58" }] },
+        { featureType: "transit", elementType: "labels.text.fill", stylers: [{ color: "#98a5be" }] },
+        { featureType: "transit", elementType: "labels.text.stroke", stylers: [{ color: "#1d2c4d" }] },
+        { featureType: "transit.line", elementType: "geometry.fill", stylers: [{ color: "#283d6a" }] },
+        { featureType: "transit.station", elementType: "geometry", stylers: [{ color: "#3a4762" }] },
+        { featureType: "water", elementType: "geometry", stylers: [{ color: "#0e1626" }] },
+        { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#4e6d70" }] }
       ],
-      terrain: 'terrain'
+      terrain: 'terrain',
+      satellite: 'satellite',
+      hybrid: 'hybrid'
     };
 
     // Change map style
     function changeMapStyle(styleName) {
       const style = MAP_STYLES[styleName];
+      
       if (typeof style === 'string') {
+        // It's a map type (terrain, satellite, hybrid)
         map.setMapTypeId(style);
         map.setOptions({ styles: [] });
       } else {
+        // It's a custom style array
         map.setMapTypeId('roadmap');
         map.setOptions({ styles: style });
       }
@@ -641,8 +726,10 @@
 
     function updateStatus(message) {
       document.getElementById('status').textContent = message;
+      console.log(message);
     }
 
+    // Toggle filter panel visibility
     function toggleFilterPanel() {
       const panel = document.getElementById('filterPanel');
       const btn = document.getElementById('showFiltersBtn');
@@ -650,6 +737,7 @@
       btn.style.display = panel.classList.contains('collapsed') ? 'block' : 'none';
     }
 
+    // Select all categories
     function selectAllCategories() {
       Object.keys(categoryVisibility).forEach(category => {
         categoryVisibility[category] = true;
@@ -659,6 +747,7 @@
       updateMarkerVisibility();
     }
 
+    // Deselect all categories
     function deselectAllCategories() {
       Object.keys(categoryVisibility).forEach(category => {
         categoryVisibility[category] = false;
@@ -668,11 +757,13 @@
       updateMarkerVisibility();
     }
 
+    // Toggle category visibility
     function toggleCategory(category) {
       categoryVisibility[category] = !categoryVisibility[category];
       updateMarkerVisibility();
     }
 
+    // Update marker visibility based on selected categories
     function updateMarkerVisibility() {
       markers.forEach(markerObj => {
         const isVisible = categoryVisibility[markerObj.category] !== false;
@@ -680,18 +771,24 @@
       });
     }
 
+    // Build category filter UI
     function buildCategoryFilters(adventures) {
+      // Count adventures per category
       categoryCounts = {};
       adventures.forEach(adventure => {
-        const category = adventure['Category'] || 'Uncategorized';
+        const category = (adventure['Category'] || 'Uncategorized').trim();
         categoryCounts[category] = (categoryCounts[category] || 0) + 1;
       });
 
+      // Get unique categories sorted
       const categories = Object.keys(categoryCounts).sort();
+
+      // Initialize only National High Adventure Base as visible by default
       categories.forEach(category => {
         categoryVisibility[category] = (category === 'National High Adventure Base');
       });
 
+      // Build filter UI
       const filterContainer = document.getElementById('categoryFilters');
       filterContainer.innerHTML = '';
 
@@ -722,27 +819,33 @@
         filterContainer.appendChild(filterItem);
       });
 
+      // Start with filter panel collapsed
       document.getElementById('filterPanel').classList.add('collapsed');
       document.getElementById('showFiltersBtn').style.display = 'block';
     }
 
+    // Initialize the map
     function initMap() {
       updateStatus('Initializing map...');
       
       map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: 39.8283, lng: -98.5795 },
+        center: { lat: 39.8283, lng: -98.5795 }, // Center of USA
         zoom: 4,
         styles: MAP_STYLES.retro,
-        mapTypeControl: false
+        mapTypeControl: false // Disable the Satellite/Terrain toggle
       });
 
       infoWindow = new google.maps.InfoWindow();
       geocoder = new google.maps.Geocoder();
       bounds = new google.maps.LatLngBounds();
 
+      updateStatus('Map initialized. Fetching data...');
+      
+      // Load data from Google Sheet
       fetchData();
     }
 
+    // Fetch data from Google Apps Script
     async function fetchData() {
       try {
         updateStatus('Fetching from Google Sheet...');
@@ -750,80 +853,132 @@
         const response = await fetch(GOOGLE_SCRIPT_URL);
         const data = await response.json();
 
+        console.log('Raw data:', data);
+
         if (data.error) {
           throw new Error(data.error);
         }
 
+        updateStatus(`Got ${data.rows.length} rows. Filtering...`);
+
+        // Filter to only include featured or approved items
         const adventures = data.rows.filter(row => {
           const status = (row['Published Status'] || '').toLowerCase().trim();
           return status === 'featured' || status === 'approved';
         });
 
+        updateStatus(`${adventures.length} adventures after filtering. Processing locations...`);
+
+        // Store all adventures for filtering
         allAdventures = adventures;
+
+        // Build category filters UI
         buildCategoryFilters(adventures);
+
+        // Log first adventure to see column names
+        if (adventures.length > 0) {
+          console.log('First adventure:', adventures[0]);
+          console.log('Available columns:', Object.keys(adventures[0]));
+        }
+
+        // Process each adventure
         await processAdventures(adventures);
+
+        // Hide loading overlay
         document.getElementById('loadingOverlay').style.display = 'none';
 
       } catch (error) {
         console.error('Error loading data:', error);
         document.getElementById('loadingOverlay').innerHTML = `
           <p style="color: #c53030;">Error loading adventures: ${error.message}</p>
+          <p style="margin-top: 10px; font-size: 14px;">Check the browser console for more details.</p>
         `;
       }
     }
 
+    // Process adventures and add markers
     async function processAdventures(adventures) {
       const geocodeCache = {};
       let processed = 0;
+      let geocoded = 0;
+      let usedExisting = 0;
       
       for (const adventure of adventures) {
+        const city = adventure['City'] || '';
+        const zipCode = adventure['Zip Code'] || '';
+        const state = adventure['State'] || '';
+        
+        // Check for existing Latitude/Longitude first
         const existingLat = parseFloat(adventure['Latitude']);
         const existingLng = parseFloat(adventure['Longitude']);
         
         processed++;
         
         if (!isNaN(existingLat) && !isNaN(existingLng)) {
+          // Use existing coordinates - much faster!
           const location = new google.maps.LatLng(existingLat, existingLng);
           addMarker(adventure, location);
+          usedExisting++;
+          
+          if (processed % 100 === 0) {
+            updateStatus(`Processing ${processed}/${adventures.length} (using saved coordinates)...`);
+          }
           continue;
         }
         
+        // Fall back to geocoding if no coordinates exist
         let locationString = '';
-        const zipCode = adventure['Zip Code'] || '';
-        const city = adventure['City'] || '';
-        const state = adventure['State'] || '';
-        
         if (zipCode) {
           locationString = String(zipCode).trim();
         } else if (city && state) {
           locationString = `${city}, ${state}`;
+        } else if (city) {
+          locationString = city;
         }
         
-        if (!locationString) continue;
-
-        if (geocodeCache[locationString]) {
-          addMarker(adventure, geocodeCache[locationString]);
+        if (!locationString) {
+          console.log(`Skipping adventure "${adventure['Experience Name']}" - no location data`);
           continue;
         }
 
+        updateStatus(`Geocoding ${processed}/${adventures.length}: ${locationString}`);
+
+        // Check cache first
+        if (geocodeCache[locationString]) {
+          addMarker(adventure, geocodeCache[locationString]);
+          geocoded++;
+          continue;
+        }
+
+        // Geocode the location
         try {
           const location = await geocodeLocation(locationString);
           if (location) {
             geocodeCache[locationString] = location;
             addMarker(adventure, location);
+            geocoded++;
           }
         } catch (error) {
-          console.log(`Could not geocode: ${locationString}`);
+          console.log(`Could not geocode: ${locationString}`, error);
         }
 
+        // Small delay to avoid hitting API rate limits
         await new Promise(resolve => setTimeout(resolve, 150));
       }
 
+      if (usedExisting > 0) {
+        updateStatus(`Done! ${usedExisting} from saved coords, ${geocoded} geocoded.`);
+      } else {
+        updateStatus(`Done! Placed ${geocoded} markers.`);
+      }
+
+      // Fit map to show all markers
       if (markers.length > 0) {
         map.fitBounds(bounds);
       }
     }
 
+    // Geocode a location string
     function geocodeLocation(address) {
       return new Promise((resolve, reject) => {
         geocoder.geocode({ address: address }, (results, status) => {
@@ -836,15 +991,17 @@
       });
     }
 
+    // Add a marker to the map
     function addMarker(adventure, location) {
-      const category = adventure['Category'] || 'default';
+      const category = (adventure['Category'] || 'default').trim();
       
       let markerOptions = {
         position: location,
         map: map,
-        title: adventure['Activity Name'] || adventure['Experience Name'] || 'Adventure'
+        title: adventure['Experience Name'] || 'Adventure'
       };
 
+      // Check if we have a custom icon for this category
       if (CATEGORY_ICONS[category]) {
         markerOptions.icon = {
           url: CATEGORY_ICONS[category],
@@ -852,6 +1009,7 @@
           anchor: new google.maps.Point(20, 20)
         };
       } else {
+        // Use colored circle as fallback
         const color = CATEGORY_COLORS[category] || CATEGORY_COLORS['default'];
         markerOptions.icon = {
           path: google.maps.SymbolPath.CIRCLE,
@@ -864,16 +1022,21 @@
       }
 
       const marker = new google.maps.Marker(markerOptions);
+
+      // Set initial visibility based on category filter
       marker.setVisible(categoryVisibility[category] !== false);
 
+      // Extend bounds to include this marker (only if visible)
       if (categoryVisibility[category] !== false) {
         bounds.extend(location);
       }
 
+      // Add click listener to show detail card below map
       marker.addListener('click', () => {
         showDetailCard(adventure);
       });
 
+      // Store marker with category for filtering
       markers.push({
         marker: marker,
         category: category,
@@ -881,71 +1044,96 @@
       });
     }
 
-    // Generate direct link to explore page for an adventure
-    function getAdventureDirectLink(adventureName) {
-      return EXPLORE_BASE_URL + '?adventure=' + encodeURIComponent(adventureName);
+    // Create info window content
+    function createInfoWindowContent(adventure) {
+      const name = adventure['Experience Name'] || 'Adventure';
+      const category = adventure['Category'] || '';
+      const description = adventure['Description'] || '';
+      const city = adventure['City'] || '';
+      const state = adventure['State'] || '';
+      const region = adventure['Region'] || '';
+      const activityUrl = adventure['Activity URL'] || '';
+      const cost = adventure['Cost'] || '';
+      const season = adventure['Season'] || '';
+
+      let locationText = '';
+      if (city && state) {
+        locationText = `${city}, ${state}`;
+      } else if (city) {
+        locationText = city;
+      } else if (region) {
+        locationText = region;
+      }
+
+      let html = `<div class="info-window">`;
+      html += `<h3>${escapeHTML(name)}</h3>`;
+      
+      if (category) {
+        html += `<span class="category-badge">${escapeHTML(category)}</span>`;
+      }
+      
+      if (locationText) {
+        html += `<p><strong>Location:</strong> ${escapeHTML(locationText)}</p>`;
+      }
+      
+      if (season) {
+        html += `<p><strong>Season:</strong> ${escapeHTML(season)}</p>`;
+      }
+      
+      if (cost) {
+        html += `<p><strong>Cost:</strong> ${escapeHTML(cost)}</p>`;
+      }
+      
+      if (description) {
+        const shortDesc = description.length > 150 ? description.substring(0, 150) + '...' : description;
+        html += `<p>${escapeHTML(shortDesc)}</p>`;
+      }
+      
+      if (activityUrl) {
+        html += `<a href="${escapeHTML(activityUrl)}" target="_blank">View Details →</a>`;
+      }
+      
+      html += `</div>`;
+      
+      return html;
     }
 
-    // Copy to clipboard function with iframe fallback
+    // Copy to clipboard function for sharing
     function copyToClipboard(text, button) {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-          showCopySuccess(button);
-        }).catch(err => {
-          fallbackCopyToClipboard(text, button);
-        });
-      } else {
-        fallbackCopyToClipboard(text, button);
-      }
-    }
-    
-    function fallbackCopyToClipboard(text, button) {
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-      textArea.style.position = 'fixed';
-      textArea.style.left = '-9999px';
-      textArea.style.top = '-9999px';
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      
-      try {
-        const successful = document.execCommand('copy');
-        if (successful) {
-          showCopySuccess(button);
-        } else {
-          prompt('Copy this link (Ctrl+C or Cmd+C):', text);
-        }
-      } catch (err) {
-        prompt('Copy this link (Ctrl+C or Cmd+C):', text);
-      }
-      
-      document.body.removeChild(textArea);
-    }
-    
-    function showCopySuccess(button) {
-      button.classList.add('copied');
-      const originalTitle = button.title;
-      button.title = 'Copied!';
-      setTimeout(() => {
-        button.classList.remove('copied');
-        button.title = originalTitle;
-      }, 2000);
+      navigator.clipboard.writeText(text).then(() => {
+        button.classList.add('copied');
+        const originalTitle = button.title;
+        button.title = 'Copied!';
+        setTimeout(() => {
+          button.classList.remove('copied');
+          button.title = originalTitle;
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy link. Please copy manually: ' + text);
+      });
     }
 
+    // Convert Google Drive URL to direct viewable image URL
     function getViewableImageUrl(url) {
       if (!url) return '';
       
+      // Handle Google Drive file URLs
+      // Format: https://drive.google.com/open?id=XXXXX or https://drive.google.com/file/d/XXXXX/view
       let fileId = '';
       
       if (url.includes('drive.google.com')) {
+        // Try to extract file ID from various Google Drive URL formats
         const openIdMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
         const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+        const ucIdMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
         
         if (openIdMatch) {
           fileId = openIdMatch[1];
         } else if (fileIdMatch) {
           fileId = fileIdMatch[1];
+        } else if (ucIdMatch) {
+          fileId = ucIdMatch[1];
         }
         
         if (fileId) {
@@ -953,13 +1141,15 @@
         }
       }
       
+      // Return original URL if not a Google Drive link
       return url;
     }
 
+    // Display adventure details in the card panel below the map
     function showDetailCard(adventure) {
       const panel = document.getElementById('detailPanel');
       
-      const name = adventure['Activity Name'] || adventure['Experience Name'] || 'Adventure';
+      const name = adventure['Experience Name'] || 'Adventure';
       const category = adventure['Category'] || '';
       const description = adventure['Description'] || 'No description available.';
       const city = adventure['City'] || '';
@@ -968,22 +1158,25 @@
       const activityUrl = adventure['Activity URL'] || '';
       const cost = adventure['Cost'] || '';
       const season = adventure['Season'] || '';
+      const ageRange = adventure['Age Range'] || '';
       const duration = adventure['Duration'] || '';
-      const imageUrl = getViewableImageUrl(adventure['Image URL'] || adventure['Image Upload (Optional)'] || '');
+      const council = adventure['Council'] || '';
+      const imageUrl = getViewableImageUrl(adventure['Image Upload (Optional)'] || '');
       const firstName = adventure['First Name'] || '';
       const position = adventure['Position'] || '';
       const unitType = adventure['Unit Type'] || '';
       const unitNumber = adventure['Unit Number'] || '';
-      const council = adventure['Council'] || '';
 
-      // Generate direct link for sharing
-      const directLink = getAdventureDirectLink(name);
-
+      // Build submitter info line
       let submitterParts = [];
       if (firstName) submitterParts.push(firstName);
       if (position) submitterParts.push(position);
       if (unitType && unitNumber) {
         submitterParts.push(`${unitType} ${unitNumber}`);
+      } else if (unitType) {
+        submitterParts.push(unitType);
+      } else if (unitNumber) {
+        submitterParts.push(`Unit ${unitNumber}`);
       }
       if (council) submitterParts.push(council);
       const submitterLine = submitterParts.join(' • ');
@@ -991,12 +1184,11 @@
       let locationText = '';
       if (city && state) {
         locationText = `${city}, ${state}`;
+      } else if (city) {
+        locationText = city;
       } else if (region) {
         locationText = region;
       }
-
-      // Escape name for use in onclick handlers
-      const escapedName = escapeHTML(name).replace(/'/g, "\\'");
 
       let html = `
         <div class="detail-card">
@@ -1009,7 +1201,7 @@
             <div class="detail-card-grid">
               ${locationText ? `
                 <div class="detail-card-field">
-                  <label>Location</label>
+                  <label>Region</label>
                   <span>${escapeHTML(locationText)}</span>
                 </div>
               ` : ''}
@@ -1023,6 +1215,12 @@
                 <div class="detail-card-field">
                   <label>Cost</label>
                   <span>${escapeHTML(cost)}</span>
+                </div>
+              ` : ''}
+              ${ageRange ? `
+                <div class="detail-card-field">
+                  <label>Age Range</label>
+                  <span>${escapeHTML(ageRange)}</span>
                 </div>
               ` : ''}
               ${duration ? `
@@ -1040,27 +1238,21 @@
               ${activityUrl ? `<a href="${escapeHTML(activityUrl)}" target="_blank">View Details →</a>` : ''}
             </div>
             <div class="share-buttons">
-              <span>Share this adventure:</span>
-              <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(directLink)}&quote=${encodeURIComponent('Check out ' + name + ' on Where To Go Scouting!')}" target="_blank" class="share-btn facebook" title="Share on Facebook">
+              <span>Share:</span>
+              <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://sites.google.com/view/wheretogoscouting/')}&quote=${encodeURIComponent('Check out ' + name + ' on Where To Go Scouting! Search for "' + name + '" to find this adventure.')}" target="_blank" class="share-btn facebook" title="Share on Facebook">
                 <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
               </a>
-              <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent('Check out ' + name + ' on Where To Go Scouting! 🏕️')}&url=${encodeURIComponent(directLink)}" target="_blank" class="share-btn twitter" title="Share on X">
+              <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent('Check out ' + name + ' on Where To Go Scouting! 🏕️\n\nSearch for "' + name + '" to find this adventure.\n\nhttps://sites.google.com/view/wheretogoscouting/')}" target="_blank" class="share-btn twitter" title="Share on X">
                 <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
               </a>
-              <a href="https://pinterest.com/pin/create/button/?url=${encodeURIComponent(directLink)}&description=${encodeURIComponent('Check out ' + name + ' on Where To Go Scouting! 🏕️')}" target="_blank" class="share-btn pinterest" title="Share on Pinterest">
-                <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
-              </a>
-              <a href="https://wa.me/?text=${encodeURIComponent('Check out ' + name + ' on Where To Go Scouting! 🏕️\\n\\n' + directLink)}" target="_blank" class="share-btn whatsapp" title="Share on WhatsApp">
+              <a href="https://wa.me/?text=${encodeURIComponent('Check out ' + name + ' on Where To Go Scouting! 🏕️\n\nSearch for "' + name + '" to find this adventure.\n\nhttps://sites.google.com/view/wheretogoscouting/')}" target="_blank" class="share-btn whatsapp" title="Share on WhatsApp">
                 <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
               </a>
-              <a href="mailto:?subject=${encodeURIComponent('Check out ' + name + ' - a Scouting Adventure!')}&body=${encodeURIComponent('I found this great adventure on Where To Go Scouting!\\n\\n' + name + '\\n\\nClick here to view it: ' + directLink)}" class="share-btn email" title="Share via Email">
-                <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-              </a>
-              <a href="https://discord.com/channels/@me" onclick="copyToClipboard('Check out ${escapedName} on Where To Go Scouting! 🏕️\\n\\n${directLink}', this); return false;" class="share-btn discord" title="Copy for Discord">
+              <a href="https://discord.com/channels/@me" onclick="copyToClipboard('Check out ${escapeHTML(name).replace(/'/g, "\\'")} on Where To Go Scouting! 🏕️\\n\\nSearch for \\'${escapeHTML(name).replace(/'/g, "\\'")}\\' to find this adventure.\\n\\nhttps://sites.google.com/view/wheretogoscouting/', this); return false;" class="share-btn discord" title="Copy link for Discord">
                 <svg viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/></svg>
               </a>
-              <button onclick="copyToClipboard('${directLink}', this)" class="share-btn copy-link" title="Copy Direct Link">
-                <svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+              <button onclick="copyToClipboard('Check out ${escapeHTML(name).replace(/'/g, "\\'")} on Where To Go Scouting! 🏕️\\n\\nSearch for \\'${escapeHTML(name).replace(/'/g, "\\'")}\\' to find this adventure.\\n\\nhttps://sites.google.com/view/wheretogoscouting/', this)" class="share-btn copy-link" title="Copy Link">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
               </button>
             </div>
           </div>
@@ -1068,9 +1260,12 @@
       `;
 
       panel.innerHTML = html;
+      
+      // Scroll the detail panel into view
       panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    // Escape HTML
     function escapeHTML(str) {
       if (!str) return '';
       const div = document.createElement('div');
@@ -1078,9 +1273,11 @@
       return div.innerHTML;
     }
 
+    // Handle Google Maps loading error
     function gm_authFailure() {
       document.getElementById('loadingOverlay').innerHTML = `
         <p style="color: #c53030;">Google Maps API authentication failed.</p>
+        <p style="margin-top: 10px; font-size: 14px;">Please check that your API key is valid and has the Maps JavaScript API and Geocoding API enabled.</p>
       `;
     }
   </script>
