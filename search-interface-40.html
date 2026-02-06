@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -681,11 +681,8 @@
         // Store total count for display
         totalAdventuresCount = allData.length;
         
-        // Initially filter to show only National High Adventure Base
-        filteredData = allData.filter(row => {
-          const category = (row['Category'] || '').trim();
-          return category === 'National High Adventure Base';
-        });
+        // Initially show all adventures (no category filter)
+        filteredData = [...allData];
 
         setupFilters();
         renderResults();
@@ -1087,8 +1084,7 @@
           select.innerHTML = `<option value="">All Categories</option>`;
           
           uniqueCategories.forEach(value => {
-            const selected = value === 'National High Adventure Base' ? ' selected' : '';
-            select.innerHTML += `<option value="${value}"${selected}>${value}</option>`;
+            select.innerHTML += `<option value="${value}">${value}</option>`;
           });
           
           select.onchange = performSearch;
@@ -1332,10 +1328,10 @@
       const cost = row['Cost'] || '';
       const season = row['Season'] || '';
       const duration = row['Duration'] || '';
-      const activityUrl = row['Activity URL'] || '';
+      const activityUrl = row['Activity Website (URL)'] || '';
       const safetyNotes = row['Safety Notes'] || '';
       const firstName = row['First Name'] || '';
-      const position = row['Position'] || '';
+      const position = row['Unit Position'] || '';
       const unitType = row['Unit Type'] || '';
       const unitNumber = row['Unit Number'] || '';
       const council = row['Council'] || '';
@@ -1443,20 +1439,61 @@
       document.body.style.overflow = 'hidden';
     }
 
-    // Copy to clipboard function for sharing
+    // Copy to clipboard function for sharing (with iframe fallback)
     function copyToClipboard(text, button) {
-      navigator.clipboard.writeText(text).then(() => {
-        button.classList.add('copied');
-        const originalTitle = button.title;
-        button.title = 'Copied!';
-        setTimeout(() => {
-          button.classList.remove('copied');
-          button.title = originalTitle;
-        }, 2000);
-      }).catch(err => {
-        console.error('Failed to copy:', err);
-        alert('Failed to copy link. Please copy manually: ' + text);
-      });
+      // Try modern clipboard API first
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showCopySuccess(button);
+        }).catch(err => {
+          // Fallback for iframes and older browsers
+          fallbackCopyToClipboard(text, button);
+        });
+      } else {
+        // Fallback for iframes and older browsers
+        fallbackCopyToClipboard(text, button);
+      }
+    }
+    
+    // Fallback copy method using textarea
+    function fallbackCopyToClipboard(text, button) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-9999px';
+      textArea.style.top = '-9999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          showCopySuccess(button);
+        } else {
+          showCopyPrompt(text);
+        }
+      } catch (err) {
+        showCopyPrompt(text);
+      }
+      
+      document.body.removeChild(textArea);
+    }
+    
+    // Show success feedback on button
+    function showCopySuccess(button) {
+      button.classList.add('copied');
+      const originalTitle = button.title;
+      button.title = 'Copied!';
+      setTimeout(() => {
+        button.classList.remove('copied');
+        button.title = originalTitle;
+      }, 2000);
+    }
+    
+    // Show prompt with text to copy manually
+    function showCopyPrompt(text) {
+      prompt('Copy this link (Ctrl+C or Cmd+C):', text);
     }
 
     // Close modal
