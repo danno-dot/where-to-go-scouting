@@ -47,21 +47,27 @@
     }
 
     .detail-panel-close {
-      position: fixed;
+      position: absolute;
       top: 16px;
       right: 16px;
-      width: 48px;
-      height: 48px;
-      background: rgba(0,0,0,0.7);
-      color: white;
+      width: 52px;
+      height: 52px;
+      background: white;
+      color: #333;
       border: none;
       border-radius: 50%;
       font-size: 28px;
+      font-weight: bold;
       cursor: pointer;
       z-index: 810;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .detail-panel-close:active {
+      background: #f0f0f0;
     }
 
     .detail-placeholder {
