@@ -17,7 +17,7 @@
 
     #map {
       width: 100%;
-      height: 60vh;
+      height: 72vh;
     }
 
     .info-window {
@@ -293,6 +293,7 @@
         transform: translateY(100%);
         transition: transform 0.3s ease-out;
         z-index: 1000;
+        display: block !important; /* Override collapsed display:none */
       }
 
       .filter-panel.active {
@@ -684,10 +685,12 @@
       const isMobile = window.innerWidth <= 768;
       
       if (isMobile) {
-        // Mobile: use active class and overlay
+        // Remove collapsed class if present (from desktop init)
+        panel.classList.remove('collapsed');
         panel.classList.toggle('active');
         overlay.classList.toggle('active');
         document.body.style.overflow = panel.classList.contains('active') ? 'hidden' : '';
+        btn.style.display = panel.classList.contains('active') ? 'none' : 'block';
       } else {
         // Desktop: use collapsed class
         panel.classList.toggle('collapsed');
