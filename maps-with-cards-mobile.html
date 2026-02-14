@@ -159,26 +159,63 @@
     .detail-card-actions a {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       padding: 12px 24px;
-      background: #FFCE00;
-      color: #1a1a1a;
+      background: #1a1a1a;
+      color: #f6d13b;
       text-decoration: none;
-      border-radius: 8px;
+      border-radius: 50px;
       font-weight: 600;
       transition: background 0.2s;
     }
 
     .detail-card-actions a:hover {
-      background: #e6b800;
+      background: #333333;
+      color: #f6d13b;
     }
 
     .detail-card-actions a.secondary {
       background: #1a1a1a;
-      color: #FFCE00;
+      color: #f6d13b;
     }
 
     .detail-card-actions a.secondary:hover {
       background: #333333;
+      color: #f6d13b;
+    }
+
+    .be-a-scout-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      background: #1a1a1a;
+      color: #f6d13b;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 0.3px;
+      transition: background 0.2s;
+    }
+
+    .be-a-scout-btn:hover {
+      background: #333333;
+      color: #f6d13b;
+    }
+
+    .detail-card-category-hero {
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .detail-card-category-hero svg {
+      width: 90px;
+      height: 90px;
+      opacity: 0.85;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
     }
 
     .share-buttons {
@@ -1416,6 +1453,26 @@
     }
 
     // Display adventure details in the card panel below the map
+    // Simplified white SVG icons for category hero backgrounds
+    function getCategoryHeroIcon(category) {
+      var iconUrl = CATEGORY_ICONS[category] || null;
+      if (iconUrl) {
+        return '<img src="' + iconUrl + '" alt="' + category + '" style="width:120px;height:120px;filter:drop-shadow(0 3px 10px rgba(0,0,0,0.3));">';
+      }
+      return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g fill="#fff"><path d="M50 10c-13 0-24 11-24 24 0 18 24 46 24 46s24-28 24-46c0-13-11-24-24-24zm0 33c-5 0-9-4-9-9s4-9 9-9 9 4 9 9-4 9-9 9z"/></g></svg>';
+    }
+
+    function getCategoryGradient(category) {
+      const color = CATEGORY_COLORS[category] || CATEGORY_COLORS['default'];
+      const num = parseInt(color.replace('#', ''), 16);
+      const amt = Math.round(2.55 * 20);
+      const R = Math.max((num >> 16) - amt, 0);
+      const G = Math.max((num >> 8 & 0x00FF) - amt, 0);
+      const B = Math.max((num & 0x0000FF) - amt, 0);
+      const darker = '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+      return `linear-gradient(135deg, ${color} 0%, ${darker} 100%)`;
+    }
+
     function showDetailCard(adventure) {
       const panel = document.getElementById('detailPanel');
       
@@ -1459,7 +1516,7 @@
             <h2>${escapeHTML(name)}</h2>
             ${category ? `<span class="category-badge">${escapeHTML(category)}</span>` : ''}
           </div>
-          ${imageUrl ? `<div class="detail-card-image"><img src="${escapeHTML(imageUrl)}" alt="${escapeHTML(name)}" onerror="this.parentElement.style.display='none';"></div>` : ''}
+          ${imageUrl ? `<div class="detail-card-image"><img src="${escapeHTML(imageUrl)}" alt="${escapeHTML(name)}" onerror="this.parentElement.style.display='none';"></div>` : `<div class="detail-card-category-hero" style="background: ${getCategoryGradient(category)};">${getCategoryHeroIcon(category)}</div>`}
           <div class="detail-card-body">
             <div class="detail-card-grid">
               ${locationText ? `
@@ -1499,6 +1556,7 @@
             ${submitterLine ? `<div class="detail-card-submitter">Respectfully Submitted By: ${escapeHTML(submitterLine)}</div>` : ''}
             <div class="detail-card-actions">
               ${activityUrl ? `<a href="${escapeHTML(activityUrl)}" target="_blank">View Details →</a>` : ''}
+              <a href="https://beascout.scouting.org/" target="_blank" class="be-a-scout-btn">Be a Scout!</a>
             </div>
             <div class="share-buttons">
               <span>Share:</span>
