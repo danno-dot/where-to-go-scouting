@@ -1,18 +1,15 @@
 name: Generate Social Share Pages
 
 on:
-  # Run every 6 hours to pick up new/changed adventures
   schedule:
     - cron: '0 */6 * * *'
-  # Run on push to main (for manual updates)
   push:
     branches: [main]
-  # Allow manual trigger from GitHub Actions tab
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write a
+  pages: write
   id-token: write
 
 concurrency:
