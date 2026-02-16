@@ -28,6 +28,19 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Copy existing site files
+        run: |
+          mkdir -p share-output
+          # Copy all HTML files from repo root to output
+          cp -f *.html share-output/ 2>/dev/null || true
+          # Copy any other static assets if they exist
+          cp -rf css share-output/css 2>/dev/null || true
+          cp -rf js share-output/js 2>/dev/null || true
+          cp -rf images share-output/images 2>/dev/null || true
+          cp -rf assets share-output/assets 2>/dev/null || true
+          echo "Copied existing site files to share-output/"
+          ls -la share-output/
+
       - name: Generate share pages
         run: node generate-share-pages.js
 
