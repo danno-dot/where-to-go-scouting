@@ -287,10 +287,14 @@ function fetchData(url) {
 async function main() {
   console.log('Fetching adventures from Google Sheet...');
 
-  const data = await fetchData(GOOGLE_SCRIPT_URL);
-  const adventures = data.data || data;
+  const raw = await fetchData(GOOGLE_SCRIPT_URL);
+  
+  // The Google Apps Script returns different structures depending on the endpoint
+  // Try: raw.rows, raw.data, or raw itself
+  const adventures = raw.rows || raw.data || (Array.isArray(raw) ? raw : null);
 
   if (!Array.isArray(adventures)) {
+    console.error('Response keys:', Object.keys(raw || {}));
     throw new Error('Expected array of adventures, got: ' + typeof adventures);
   }
 
