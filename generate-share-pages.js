@@ -94,7 +94,6 @@ function makeSharePage(adv, imgFile) {
     '<meta name="twitter:title" content="' + esc(title) + '"/>',
     '<meta name="twitter:description" content="' + esc(trunc(desc, 200)) + '"/>',
     '<meta name="twitter:image" content="' + esc(img) + '"/>',
-    '<meta http-equiv="refresh" content="0;url=' + esc(canonical) + '"/>',
     '<link rel="canonical" href="' + esc(canonical) + '"/>',
     '<style>body{font-family:sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#1a1a1a;color:#f6d13b;text-align:center;padding:20px}a{color:#f6d13b}.btn{display:inline-block;margin-top:20px;padding:12px 32px;background:#f6d13b;color:#1a1a1a;text-decoration:none;border-radius:50px;font-weight:600}</style>',
     '</head><body><div>',
@@ -179,10 +178,17 @@ async function main() {
       imgFile = slug + '.jpg';
       var imgPath = path.join(IMAGES_DIR, imgFile);
       try {
+        console.log('  Downloading image for ' + slug + ': ' + imgUrl.substring(0, 80) + '...');
         await downloadImage(imgUrl, imgPath);
         var sz = fs.statSync(imgPath).size;
-        if (sz < 1000) { fs.unlinkSync(imgPath); imgFile = null; imgFail++; }
-        else { imgOk++; }
+        if (sz < 1000) { 
+          console.warn('  Image too small (' + sz + ' bytes), skipping');
+          fs.unlinkSync(imgPath); imgFile = null; imgFail++; 
+        }
+        else { 
+          console.log('  OK: ' + sz + ' bytes');
+          imgOk++; 
+        }
       } catch(e) {
         console.warn('  Image fail: ' + slug + ' - ' + e.message);
         imgFile = null; imgFail++;
