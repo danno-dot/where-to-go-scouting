@@ -52,12 +52,19 @@ function downloadImage(url, destPath, redir) {
   return new Promise(function(resolve, reject) {
     if (redir <= 0) { reject(new Error('Too many redirects')); return; }
     var lib = url.startsWith('https') ? https : http;
-    lib.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, function(res) {
+    lib.get(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' } }, function(res) {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         resolve(downloadImage(res.headers.location, destPath, redir - 1));
         return;
       }
       if (res.statusCode !== 200) { reject(new Error('HTTP ' + res.statusCode)); return; }
+      // Check content type - reject if not an image
+      var ct = (res.headers['content-type'] || '').toLowerCase();
+      if (ct && !ct.startsWith('image/')) {
+        res.resume(); // drain the response
+        reject(new Error('Not an image: content-type=' + ct));
+        return;
+      }
       var stream = fs.createWriteStream(destPath);
       res.pipe(stream);
       stream.on('finish', function() { stream.close(); resolve(true); });
@@ -66,7 +73,7 @@ function downloadImage(url, destPath, redir) {
   });
 }
 
-function makeSharePage(adv, imgFile) {
+function makeSharePage(adv, shareImageUrl) {
   var title = adv['Experience Name'] || 'Scouting Adventure';
   var desc = adv['Description'] || 'Discover this amazing scouting adventure on Where To Go Scouting!';
   var cat = adv['Category'] || '';
@@ -76,7 +83,7 @@ function makeSharePage(adv, imgFile) {
   var slug = slugify(title);
   var canonical = SITE_URL + '/explore?adventure=' + encodeURIComponent(title);
   var shareUrl = SHARE_BASE + '/share/' + slug;
-  var img = imgFile ? (SHARE_BASE + '/share-images/' + imgFile) : FALLBACK_IMAGE;
+  var img = shareImageUrl || FALLBACK_IMAGE;
 
   return [
     '<!DOCTYPE html><html lang="en"><head>',
@@ -171,32 +178,32 @@ async function main() {
     if (slugs.has(slug)) { console.warn('  Duplicate: ' + slug); skipped++; continue; }
     slugs.add(slug);
 
-    // Download share image
+    // Download share image (now public)
     var imgFile = null;
     var imgUrl = getShareImageUrl(a);
     if (imgUrl) {
       imgFile = slug + '.jpg';
       var imgPath = path.join(IMAGES_DIR, imgFile);
       try {
-        console.log('  Downloading image for ' + slug + ': ' + imgUrl.substring(0, 80) + '...');
+        console.log('  Downloading: ' + slug);
         await downloadImage(imgUrl, imgPath);
         var sz = fs.statSync(imgPath).size;
-        if (sz < 1000) { 
-          console.warn('  Image too small (' + sz + ' bytes), skipping');
-          fs.unlinkSync(imgPath); imgFile = null; imgFail++; 
-        }
-        else { 
-          console.log('  OK: ' + sz + ' bytes');
-          imgOk++; 
+        if (sz < 1000) {
+          console.warn('    Too small (' + sz + 'b), skipping');
+          fs.unlinkSync(imgPath); imgFile = null; imgFail++;
+        } else {
+          console.log('    OK: ' + sz + ' bytes');
+          imgOk++;
         }
       } catch(e) {
-        console.warn('  Image fail: ' + slug + ' - ' + e.message);
+        console.warn('    Failed: ' + e.message);
         imgFile = null; imgFail++;
       }
     }
 
-    // Write share page
-    var html = makeSharePage(a, imgFile);
+    // Write share page with locally hosted image
+    var localImgUrl = imgFile ? (SHARE_BASE + '/share-images/' + imgFile) : null;
+    var html = makeSharePage(a, localImgUrl);
     var fp = path.join(shareDir, slug, 'index.html');
     fs.mkdirSync(path.dirname(fp), { recursive: true });
     fs.writeFileSync(fp, html);
@@ -208,7 +215,7 @@ async function main() {
 
   console.log('\nDone!');
   console.log('  Pages: ' + generated);
-  console.log('  Images OK: ' + imgOk);
+  console.log('  Images downloaded: ' + imgOk);
   console.log('  Images failed: ' + imgFail);
   console.log('  Skipped: ' + skipped);
 }
