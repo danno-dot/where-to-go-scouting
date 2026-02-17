@@ -5,7 +5,7 @@ const http = require('http');
 
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyAuWMOtbz5ZyoV4LNKLBMi9-HdKEYo_bsCykVpn639RE2Z6l4oHjpt_Qtf_EXaWtnDSA/exec';
 const SITE_URL = 'https://www.wheretogoscouting.com';
-const SHARE_BASE = 'https://danno-dot.github.io/where-to-go-scouting';
+const SHARE_BASE = 'https://share.wheretogoscouting.com';
 const OUTPUT_DIR = './share-output';
 const IMAGES_DIR = path.join(OUTPUT_DIR, 'share-images');
 const FALLBACK_IMAGE = 'https://images.squarespace-cdn.com/content/v1/6578c5765939630ec44e7bdc/1eacc902-bb2e-47d9-ad58-59e68ed8f7f6/where-to-go-scouting-logo-a+copy.png';
